@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.termsofservice.mapper.AdminTermsOfServiceMapper">
+
+	<select id="getTotalCount" parameterType="com.cellosquare.adminapp.admin.termsofservice.vo.AdminTermsOfServiceVO" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM MK_TOS A
+		WHERE LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+			AND A.TOS_CCD = #{searchType}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND  A.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+	</select>
+
+	<select id="getList" parameterType="com.cellosquare.adminapp.admin.termsofservice.vo.AdminTermsOfServiceVO" resultType="com.cellosquare.adminapp.admin.termsofservice.vo.AdminTermsOfServiceVO">
+		SELECT
+			  A.TOS_SEQ_NO
+			, A.TOS_CCD
+			, FN_GETCODENM('TERMS_DIV', A.TOS_CCD, A.LANG_CD) AS TOS_CCD_NM
+			, A.TITLE_NM
+			, A.DETL_INFO
+			, A.MEMO
+			, A.TOS_VER
+			, A.REQ_STS
+			, FN_GETCODENM('REQUIRED_ST', A.REQ_STS, A.LANG_CD) AS REQ_STS_NM
+			, A.USE_YN
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+			, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+		FROM MK_TOS A
+		WHERE LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+			AND A.TOS_CCD = #{searchType}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND  A.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+	ORDER BY A.TOS_SEQ_NO DESC
+	LIMIT #{endRow} OFFSET #{startRow}
+	</select>
+
+	<insert id="doWrite" parameterType="com.cellosquare.adminapp.admin.termsofservice.vo.AdminTermsOfServiceVO">
+	INSERT INTO MK_TOS (
+		  TOS_CCD
+		, LANG_CD
+		, TITLE_NM
+		, DETL_INFO
+		, MEMO
+		, TOS_VER
+		, REQ_STS
+		, INS_PERSON_ID
+		, INS_DTM
+		, UPD_PERSON_ID
+		, UPD_DTM
+		, USE_YN
+	) VALUES (
+		  #{tosCcd}
+		, #{langCd}
+		, #{titleNm}
+		, #{detlInfo}
+		, #{memo}
+		, #{tosVer}
+		, #{reqSts}
+		, #{insPersonId}
+		, NOW()
+		, #{updPersonId}		
+		, NOW()
+		, #{useYn}
+	)
+	</insert>
+	
+	<select id="getDetail" parameterType="com.cellosquare.adminapp.admin.termsofservice.vo.AdminTermsOfServiceVO" resultType="com.cellosquare.adminapp.admin.termsofservice.vo.AdminTermsOfServiceVO">
+		 SELECT
+		 	  A.TOS_SEQ_NO
+		 	, A.TOS_CCD
+			, FN_GETCODENM('TERMS_DIV', A.TOS_CCD, A.LANG_CD) AS TOS_CCD_NM
+			, A.LANG_CD
+			, A.TITLE_NM
+			, A.DETL_INFO
+			, MEMO
+			, TOS_VER
+			, REQ_STS
+			, FN_GETCODENM('REQUIRED_ST', A.REQ_STS, A.LANG_CD) AS REQ_STS_NM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+			, TO_CHAR(UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.USE_YN
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+		 FROM MK_TOS A
+		 WHERE 1=1
+		 AND A.TOS_SEQ_NO = #{tosSeqNo}::integer
+	</select>
+
+
+	<update id="doUpdate" parameterType="com.cellosquare.adminapp.admin.termsofservice.vo.AdminTermsOfServiceVO">
+	UPDATE MK_TOS 
+	SET
+		  TITLE_NM             				= #{titleNm}
+		, TOS_CCD	         				= #{tosCcd}
+		, DETL_INFO				 			= #{detlInfo}
+		, MEMO					 			= #{memo}
+		, TOS_VER		 					= #{tosVer}
+		, REQ_STS		 	 				= #{reqSts}
+		, USE_YN 							= #{useYn} 
+		, UPD_DTM 							= NOW()
+		, UPD_PERSON_ID 					= #{updPersonId}
+	WHERE TOS_SEQ_NO = #{tosSeqNo}::integer
+	</update>
+
+	<delete id="doDelete" parameterType="com.cellosquare.adminapp.admin.termsofservice.vo.AdminTermsOfServiceVO">
+	DELETE FROM MK_TOS
+	WHERE TOS_SEQ_NO = #{tosSeqNo}::integer
+	</delete>
+
+</mapper>
