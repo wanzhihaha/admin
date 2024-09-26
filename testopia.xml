@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <groupId>com.samsung.sds.staf</groupId>
+    <artifactId>result-maven-plugin</artifactId>
+    <version>0.8.1</version>
+    <configuration>
+
+        <!--JUnit unit test 결과와 jacoco coverage를 업로드 하는 경우 <resultType>JUnit</resultType>-->
+        <resultFileOrDirectory>./target/surefire-reports</resultFileOrDirectory>
+        <resultPrefix>TEST</resultPrefix>
+        <resultPostfix>xml</resultPostfix>
+
+        <coverageType>Jacoco</coverageType>
+        <coverageFileOrDirectory>./target/jacoco/test</coverageFileOrDirectory>
+        <coverageHtmlDirectory>./target/jacoco/test</coverageHtmlDirectory>
+        <coveragePostfix>xml</coveragePostfix>
+
+		<!--Jest unit test 결과와 coverage를 업로드 하는 경우 -->
+<!--		<resultType>Jest</resultType>
+        <resultFileOrDirectory>./junit.xml</resultFileOrDirectory>
+
+        <coverageType>Jest</coverageType>
+        <coverageFileOrDirectory>./coverage/clover.xml</coverageFileOrDirectory>
+        <coverageHtmlDirectory>./copverage/lcov-report</coverageHtmlDirectory>-->
+
+        <!-- Testopia 결과 업로드 관련 정보 -->
+        <!-- Testopia에 접속하셔서 사전에 Test Job을 만들고 해당 ID를 확인하셔야 합니다. -->
+        <testJobId>5051</testJobId>
+        <testopiaUrl>http://testopia.sdsdev.co.kr</testopiaUrl>
+    </configuration>
+</project>
