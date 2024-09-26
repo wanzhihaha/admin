@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.faq.mapper.AdminFaqMapper">
+
+	<select id="getTotalCount" parameterType="com.cellosquare.adminapp.admin.faq.vo.AdminFaqVO" resultType="int">
+		SELECT COUNT(*)
+		FROM MK_FAQ A
+		WHERE LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+			AND A.FAQ_CCD = #{searchType}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND A.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+	</select>
+	
+	<select id="getList" parameterType="com.cellosquare.adminapp.admin.faq.vo.AdminFaqVO" resultType="com.cellosquare.adminapp.admin.faq.vo.AdminFaqVO">
+		SELECT
+			  A.FAQ_SEQ
+			, A.TITLE_NM
+			, FAQ_DETL_CONTENT
+			, A.FAQ_CCD
+			, FN_GETCODENM('FAQ_DIV', A.FAQ_CCD, A.LANG_CD) AS FAQ_CCD_NM
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+			, A.SRCH_CNT
+			, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+			, A.ORDB
+		FROM MK_FAQ A
+		WHERE LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+			AND A.FAQ_CCD = #{searchType}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND A.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+		ORDER BY A.FAQ_SEQ DESC
+		LIMIT #{endRow} OFFSET #{startRow}
+	</select>
+
+	<insert id="doWrite" parameterType="com.cellosquare.adminapp.admin.faq.vo.AdminFaqVO">
+		INSERT INTO MK_FAQ (
+			LANG_CD
+			, FAQ_CCD
+			, TITLE_NM
+			, FAQ_DETL_CONTENT
+			, USE_YN
+			, SRCH_CNT
+			, INS_DTM
+			, INS_PERSON_ID
+			, UPD_DTM
+			, UPD_PERSON_ID
+		) VALUES (
+			#{langCd}
+			, #{faqCcd}
+			, #{titleNm}
+			, #{faqDetlContent}
+			, #{useYn}
+			, 0
+			, NOW()
+			, #{insPersonId}
+			, NOW()
+			, #{updPersonId}
+		)
+	</insert>
+	
+	<select id="getDetail" parameterType="com.cellosquare.adminapp.admin.faq.vo.AdminFaqVO" resultType="com.cellosquare.adminapp.admin.faq.vo.AdminFaqVO">
+		 SELECT
+		 	A.FAQ_SEQ
+			, A.LANG_CD
+			, A.FAQ_CCD
+			, A.TITLE_NM
+			, A.FAQ_DETL_CONTENT
+			, A.USE_YN
+			, A.SRCH_CNT
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, A.UPD_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+			, A.ORDB
+			, FN_GETCODENM('FAQ_DIV', A.FAQ_CCD, A.LANG_CD) AS FAQ_CCD_NM
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+		FROM MK_FAQ A
+		WHERE 1=1
+		AND A.FAQ_SEQ = #{faqSeq}::integer
+
+	 </select>
+
+
+	<update id="doUpdate" parameterType="com.cellosquare.adminapp.admin.faq.vo.AdminFaqVO">
+	UPDATE MK_FAQ
+	SET
+		  TITLE_NM = #{titleNm}
+		, FAQ_CCD = #{faqCcd}
+		, FAQ_DETL_CONTENT = #{faqDetlContent}
+		, USE_YN = #{useYn}
+		, UPD_DTM = NOW()
+		, UPD_PERSON_ID = #{updPersonId}
+	WHERE FAQ_SEQ = #{faqSeq}::integer
+	</update>
+
+	<delete id="doDelete" parameterType="com.cellosquare.adminapp.admin.faq.vo.AdminFaqVO">
+	DELETE FROM MK_FAQ
+	WHERE FAQ_SEQ = #{faqSeq}::integer
+	</delete>
+	
+	<update id="doSortOrder" parameterType="com.cellosquare.adminapp.admin.faq.vo.AdminFaqVO">
+		UPDATE MK_FAQ SET
+			ORDB = #{ordb}
+		WHERE FAQ_SEQ = #{faqSeq}::integer
+	</update>
+	
+</mapper>
