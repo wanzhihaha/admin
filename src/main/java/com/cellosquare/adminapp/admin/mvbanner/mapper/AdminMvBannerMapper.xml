@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.mvbanner.mapper.AdminMvBannerMapper">
+
+	<select id="getTotalCount" parameterType="com.cellosquare.adminapp.admin.mvbanner.vo.AdminMvBannerVO" resultType="int">
+		SELECT COUNT(*)
+		FROM MK_MV_BANNER
+		WHERE LANG_CD = #{langCd}
+		AND pic_type = #{picType}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+			AND USE_YN = #{searchType}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+			</select>
+
+	<select id="getList" parameterType="com.cellosquare.adminapp.admin.mvbanner.vo.AdminMvBannerVO" resultType="com.cellosquare.adminapp.admin.mvbanner.vo.AdminMvBannerVO">
+		SELECT
+			  A.MV_BANNER_SEQ_NO
+			 , A.carousel_type
+			, A.LANG_CD
+			, A.TITLE_NM
+			, A.content
+			, TO_CHAR(TO_TIMESTAMP(BANNER_OPEN_STAT_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS BANNER_OPEN_STAT_DATE
+			, TO_CHAR(TO_TIMESTAMP(BANNER_OPEN_END_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS BANNER_OPEN_END_DATE
+			, A.BANNER_URL
+			, A.PC_LIST_IMG_PATH
+			, A.PC_LIST_IMG_ORG_FILE_NM
+			, A.PC_LIST_IMG_FILE_NM
+			, A.PC_LIST_IMG_SIZE
+			, A.PC_LIST_IMG_ALT
+			, A.MOBILE_LIST_IMG_PATH
+			, A.MOBILE_LIST_IMG_ORG_FILE_NM
+			, A.MOBILE_LIST_IMG_FILE_NM
+			, A.MOBILE_LIST_IMG_SIZE
+			, A.MOBILE_LIST_IMG_ALT
+			, A.USE_YN
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+			, A.ORDB
+			, TO_CHAR(INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+		FROM MK_MV_BANNER A
+		WHERE LANG_CD = #{langCd}
+		AND pic_type = #{picType}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+			AND USE_YN = #{searchType}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+	ORDER BY A.ins_dtm desc
+	LIMIT #{endRow} OFFSET #{startRow}
+	</select>
+
+	<select id="getDetail" parameterType="com.cellosquare.adminapp.admin.mvbanner.vo.AdminMvBannerVO" resultType="com.cellosquare.adminapp.admin.mvbanner.vo.AdminMvBannerVO">
+		SELECT
+			  A.MV_BANNER_SEQ_NO
+			 , A.carousel_type
+			, A.LANG_CD
+			, A.TITLE_NM
+			, A.pic_type
+			, A.content
+			, TO_CHAR(TO_TIMESTAMP(BANNER_OPEN_STAT_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS BANNER_OPEN_STAT_DATE
+			, TO_CHAR(TO_TIMESTAMP(BANNER_OPEN_END_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS BANNER_OPEN_END_DATE
+			, A.BANNER_URL
+			, A.PC_LIST_IMG_PATH
+			, A.PC_LIST_IMG_ORG_FILE_NM
+			, A.PC_LIST_IMG_FILE_NM
+			, A.PC_LIST_IMG_SIZE
+			, A.PC_LIST_IMG_ALT
+			, A.MOBILE_LIST_IMG_PATH
+			, A.MOBILE_LIST_IMG_ORG_FILE_NM
+			, A.MOBILE_LIST_IMG_FILE_NM
+			, A.MOBILE_LIST_IMG_SIZE
+			, A.MOBILE_LIST_IMG_ALT
+			, A.BKGR_COLOR
+			, A.USE_YN
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+			, A.ORDB
+			, TO_CHAR(INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+		FROM MK_MV_BANNER A
+		WHERE 1=1
+		AND MV_BANNER_SEQ_NO = #{mvBannerSeqNo}::integer
+	</select>
+
+	<insert id="regist" parameterType="com.cellosquare.adminapp.admin.mvbanner.vo.AdminMvBannerVO">
+	INSERT INTO MK_MV_BANNER (
+		  LANG_CD
+		, TITLE_NM
+		, pic_type
+		, content
+		, BANNER_OPEN_STAT_DATE
+		, BANNER_OPEN_END_DATE
+		, BANNER_URL
+		, PC_LIST_IMG_PATH
+		, PC_LIST_IMG_ORG_FILE_NM
+		, PC_LIST_IMG_FILE_NM
+		, PC_LIST_IMG_SIZE
+		, PC_LIST_IMG_ALT
+		, MOBILE_LIST_IMG_PATH
+		, MOBILE_LIST_IMG_ORG_FILE_NM
+		, MOBILE_LIST_IMG_FILE_NM
+		, MOBILE_LIST_IMG_SIZE
+		, MOBILE_LIST_IMG_ALT
+		, BKGR_COLOR
+		, USE_YN
+		, INS_DTM
+		, INS_PERSON_ID
+		, UPD_DTM
+		, UPD_PERSON_ID
+		, carousel_type
+	) VALUES (
+		  #{langCd}
+		, #{titleNm}
+		, #{picType}
+		, #{content}
+		, #{bannerOpenStatDate}
+		, #{bannerOpenEndDate}
+		, #{bannerUrl}
+		, #{pcListImgPath}
+		, #{pcListImgOrgFileNm}
+		, #{pcListImgFileNm}
+		, #{pcListImgSize}::integer
+		, #{pcListImgAlt}
+		, #{mobileListImgPath}
+		, #{mobileListImgOrgFileNm}
+		, #{mobileListImgFileNm}
+		, #{mobileListImgSize}::integer
+		, #{mobileListImgAlt}
+		, #{bkgrColor}
+		, #{useYn}
+		, NOW()
+		, #{insPersonId}
+		, NOW()
+		, #{updPersonId}
+		, #{carouselType}::integer
+	)
+	</insert>
+
+	<update id="update" parameterType="com.cellosquare.adminapp.admin.mvbanner.vo.AdminMvBannerVO">
+	UPDATE MK_MV_BANNER
+	SET
+		  TITLE_NM				       	 = #{titleNm}
+		, content				       	 = #{content}
+		, BANNER_OPEN_STAT_DATE			 = #{bannerOpenStatDate}
+		, BANNER_OPEN_END_DATE			 = #{bannerOpenEndDate}
+		, BANNER_URL					 = #{bannerUrl}
+		, PC_LIST_IMG_PATH			     = #{pcListImgPath}
+		, PC_LIST_IMG_ORG_FILE_NM        = #{pcListImgOrgFileNm}
+		, PC_LIST_IMG_FILE_NM            = #{pcListImgFileNm}
+		, PC_LIST_IMG_SIZE               = #{pcListImgSize}::integer
+		, PC_LIST_IMG_ALT                = #{pcListImgAlt}
+		, MOBILE_LIST_IMG_PATH			 = #{mobileListImgPath}
+		, MOBILE_LIST_IMG_ORG_FILE_NM    = #{mobileListImgOrgFileNm}
+		, MOBILE_LIST_IMG_FILE_NM        = #{mobileListImgFileNm}
+		, MOBILE_LIST_IMG_SIZE           = #{mobileListImgSize}::integer
+		, MOBILE_LIST_IMG_ALT            = #{mobileListImgAlt}
+		, BKGR_COLOR					 = #{bkgrColor}
+		, USE_YN               			 = #{useYn}
+		, UPD_DTM 			       		 = NOW()
+		, UPD_PERSON_ID 			     = #{updPersonId}
+		, carousel_type 			     = #{carouselType}::integer
+	WHERE MV_BANNER_SEQ_NO = #{mvBannerSeqNo}::integer
+	</update>
+
+	<delete id="delete" parameterType="com.cellosquare.adminapp.admin.mvbanner.vo.AdminMvBannerVO">
+		DELETE FROM MK_MV_BANNER
+		WHERE MV_BANNER_SEQ_NO = #{mvBannerSeqNo}::integer
+	</delete>
+
+	<update id="doSortOrder" parameterType="com.cellosquare.adminapp.admin.mvbanner.vo.AdminMvBannerVO">
+		UPDATE MK_MV_BANNER SET
+			ORDB = #{ordb}
+		WHERE MV_BANNER_SEQ_NO = #{mvBannerSeqNo}::integer
+	</update>
+</mapper>

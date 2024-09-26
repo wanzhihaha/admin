@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.manager.mapper.AdminManagerMapper">
+
+	<insert id="registAdmin" parameterType="com.cellosquare.adminapp.admin.manager.vo.AdminManagerVO">
+		INSERT INTO MK_ADM_MNG (
+			ADM_USER_ID
+			, ADM_USER_NM
+			, ADM_AUTH
+			, ADM_PW
+			, SALT_VAL
+			, TEMP_PW_STS
+			, USE_YN
+			, INS_DTM
+			, INS_PERSON_ID
+			, UPD_DTM
+			, UPD_PERSON_ID
+		) VALUES (
+			 #{admUserId}
+			, #{admUserNm}
+			, #{admAuth}
+			, #{admPw}
+			, #{saltVal}
+			, #{tempPwSts} 
+			, #{useYn}
+			, NOW()
+			, #{insPersonId}
+			, NOW()
+			, #{updPersonId}		
+		)
+	</insert>
+	
+	<select id="getChkId" parameterType="com.cellosquare.adminapp.admin.login.vo.AdminLoginVO" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM MK_ADM_MNG
+		WHERE ADM_USER_ID = #{admUserId}
+	</select>
+	
+	<select id="getAdminList" parameterType="com.cellosquare.adminapp.admin.manager.vo.AdminManagerVO" resultType="com.cellosquare.adminapp.admin.manager.vo.AdminManagerVO">
+	SELECT
+		ADM_MNG_SEQ_NO
+		, ADM_USER_ID
+		, ADM_USER_NM
+		, ADM_EMAIL_ADDR
+		, ADM_AUTH
+		, FN_GETCODENM('ADM_AUTH', ADM_AUTH, #{langCd}) AS ADM_AUTH_NM
+		, ADM_PW
+		, SALT_VAL
+		, TO_CHAR(FINAL_LOG_DTM, 'YYYY-MM-DD hh24:mi:ss') AS FINAL_LOG_DTM
+		, TEMP_PW_STS
+		, FN_GETCODENM('TMP_PWD_ST', TEMP_PW_STS, #{langCd}) AS TEMP_PW_STS_NM
+		, USE_YN
+		, FN_GETCODENM('USE_YN', USE_YN, #{langCd}) AS USE_YN_NM
+		, TO_CHAR(INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+		, INS_PERSON_ID
+		, FN_GETMANAGERNM(INS_PERSON_ID) AS INS_PERSON_NM
+		, TO_CHAR(UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+		, UPD_PERSON_ID
+		, FN_GETMANAGERNM(UPD_PERSON_ID) AS UPD_PERSON_NM
+	FROM MK_ADM_MNG
+	WHERE 1=1
+	<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isEquals(searchType, '')">
+			AND (ADM_USER_ID ILIKE CONCAT ('%', #{searchValue}, '%') OR ADM_USER_NM ILIKE CONCAT ('%', #{searchValue}, '%'))
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isEquals(searchType, 'search_id')">
+			AND ADM_USER_ID ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isEquals(searchType, 'search_name')">
+			AND ADM_USER_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+	</if>
+	ORDER BY ADM_MNG_SEQ_NO DESC
+	LIMIT #{endRow} OFFSET #{startRow}
+	</select>
+	
+	<select id="getTotalCount" parameterType="com.cellosquare.adminapp.admin.manager.vo.AdminManagerVO" resultType="int">
+		SELECT COUNT(*)
+		FROM MK_ADM_MNG
+		WHERE 1=1
+	<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isEquals(searchType, '')">
+			AND (ADM_USER_ID ILIKE CONCAT ('%', #{searchValue}, '%') OR ADM_USER_NM ILIKE CONCAT ('%', #{searchValue}, '%'))
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isEquals(searchType, 'search_id')">
+			AND ADM_USER_ID ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isEquals(searchType, 'search_name')">
+			AND ADM_USER_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+	</if>
+		
+	</select>
+	
+	<select id="getDetail" parameterType="com.cellosquare.adminapp.admin.manager.vo.AdminManagerVO" resultType="com.cellosquare.adminapp.admin.manager.vo.AdminManagerVO">
+		SELECT
+			 ADM_MNG_SEQ_NO
+			, ADM_USER_ID
+			, ADM_USER_NM
+			, ADM_EMAIL_ADDR
+			, ADM_AUTH
+			, FN_GETCODENM('ADM_AUTH', ADM_AUTH, #{langCd}) AS ADM_AUTH_NM
+			, ADM_PW
+			, SALT_VAL
+			, TEMP_PW_STS
+			, FN_GETCODENM('TMP_PWD_ST', TEMP_PW_STS, #{langCd}) AS TEMP_PW_STS_NM
+			, USE_YN
+			, FN_GETCODENM('USE_YN', USE_YN, #{langCd}) AS USE_YN_NM
+			, TO_CHAR(INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, INS_PERSON_ID
+			, FN_GETMANAGERNM(INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, UPD_PERSON_ID
+			, FN_GETMANAGERNM(UPD_PERSON_ID) AS UPD_PERSON_NM
+			, LOGIN_CNT
+		FROM MK_ADM_MNG
+		WHERE ADM_MNG_SEQ_NO = #{admMngSeqNo}::integer
+	</select>
+	
+	<update id="updateAdmin" parameterType="com.cellosquare.adminapp.admin.manager.vo.AdminManagerVO">
+		UPDATE MK_ADM_MNG
+		SET
+			ADM_USER_NM = #{admUserNm}
+			<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(admPw) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(admPw)">
+			, ADM_PW = #{admPw}
+			, SALT_VAL = #{saltVal}
+			</if>
+			, ADM_AUTH = #{admAuth}
+			, USE_YN = #{useYn}
+			, UPD_DTM = NOW()
+			, UPD_PERSON_ID = #{updPersonId}
+		WHERE ADM_MNG_SEQ_NO = #{admMngSeqNo}::integer
+	</update>
+	
+	<delete id="doDelete" parameterType="com.cellosquare.adminapp.admin.manager.vo.AdminManagerVO">
+	DELETE FROM MK_ADM_MNG
+	WHERE ADM_MNG_SEQ_NO = #{admMngSeqNo}::integer
+	</delete>
+	
+	
+	<update id="sendEmail" parameterType="com.cellosquare.adminapp.admin.manager.vo.AdminManagerVO">
+		UPDATE MK_ADM_MNG
+		SET
+			TEMP_PW_STS = #{tempPwSts},
+			ADM_AUTH = #{admAuth},
+			<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(passwordEncpt) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(passwordEncpt)">
+			 ADM_PW = #{admPw},
+			 SALT_VAL = #{saltVal},
+			</if>
+			USE_YN = #{useYn},
+			UPD_PERSON_ID = #{updPersonId},
+			UPD_DTM = NOW()
+		WHERE ADM_MNG_SEQ_NO = #{admMngSeqNo}::integer
+	</update>
+	
+	
+	<update id="updateLoginFailCntReset" parameterType="com.cellosquare.adminapp.admin.manager.vo.AdminManagerVO">
+		UPDATE MK_ADM_MNG
+		SET
+			LOGIN_CNT = 0
+		WHERE ADM_MNG_SEQ_NO = #{admMngSeqNo}::integer
+	</update>
+	
+	<!-- <update id="useUpdate" parameterType="com.cellosquare.adminapp.admin.manager.vo.AdminManagerVO">
+		UPDATE MK_ADM_MNG
+		SET 
+			  USE_YN = #{useYn}
+			, LAST_UPDT_DT = NOW()
+			, LAST_UPDT_ID = #{lastUpdtId}
+			, LAST_UPDT_IP = #{lastUpdtIp}
+		WHERE ADMIN_SN = #{adminSn}::integer
+	</update> -->
+	<select id="getByUserId" parameterType="string" resultType="string">
+		SELECT
+			 ADM_USER_NM
+		FROM MK_ADM_MNG
+		WHERE adm_user_id = #{admUserId}
+	</select>
+</mapper>

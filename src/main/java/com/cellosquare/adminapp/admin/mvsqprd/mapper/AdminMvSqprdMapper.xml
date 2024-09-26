@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.mvsqprd.mapper.AdminMvSqprdMapper">
+
+	<select id="getTotalCount" parameterType="com.cellosquare.adminapp.admin.mvsqprd.vo.AdminMvSqprdVO" resultType="int">
+		SELECT COUNT(*)
+		FROM MK_MV_SQPRD A
+		JOIN MK_SQPRD B
+		ON A.RELTD_SQPRD::integer = B.SQPRD_SEQ_NO
+		WHERE A.LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+           AND A.MV_SQPRD_CCD = #{searchType}
+        </if>
+	</select>
+	
+	<select id="getList" parameterType="com.cellosquare.adminapp.admin.mvsqprd.vo.AdminMvSqprdVO" resultType="com.cellosquare.adminapp.admin.mvsqprd.vo.AdminMvSqprdVO">
+		SELECT
+			  A.MV_SQPRD_SEQ_NO
+			, A.LANG_CD
+			, A.MV_SQPRD_CCD
+			, FN_GETCODENM('MVSQPRD_DIV', A.MV_SQPRD_CCD, A.LANG_CD) AS MV_CCD_NM
+			, A.RELTD_SQPRD
+			, B.SQPRD_NM
+			, B.PC_LIST_IMG_PATH
+			, B.PC_LIST_IMG_ORG_FILE_NM
+			, B.PC_LIST_IMG_FILE_NM
+			, B.PC_LIST_IMG_ALT
+			, B.MOBILE_LIST_IMG_PATH 
+			, B.MOBILE_LIST_IMG_ORG_FILE_NM
+			, B.MOBILE_LIST_IMG_FILE_NM
+			, B.MOBILE_LIST_IMG_ALT
+			, A.ORDB
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+			, CASE WHEN (SELECT COUNT(*) FROM MK_SQPRD WHERE SQPRD_SEQ_NO = A.RELTD_SQPRD::integer AND USE_YN='Y') = 0 THEN 'N'
+			ELSE A.USE_YN END USE_YN
+			, CASE WHEN (SELECT COUNT(*) FROM MK_SQPRD WHERE SQPRD_SEQ_NO = A.RELTD_SQPRD::integer AND USE_YN='Y') = 0 THEN FN_GETCODENM('USE_YN', 'N', A.LANG_CD) 
+			ELSE FN_GETCODENM('USE_YN',A.USE_YN, A.LANG_CD)  END USE_YN_NM
+		FROM MK_MV_SQPRD A
+		JOIN MK_SQPRD B
+		ON A.LANG_CD = B.LANG_CD AND A.RELTD_SQPRD::integer = B.SQPRD_SEQ_NO
+		WHERE A.LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+           AND MV_SQPRD_CCD = #{searchType}
+        </if>
+		ORDER BY A.MV_SQPRD_SEQ_NO DESC 
+	</select>
+	
+	<select id="getDetail" parameterType="com.cellosquare.adminapp.admin.mvsqprd.vo.AdminMvSqprdVO" resultType="com.cellosquare.adminapp.admin.mvsqprd.vo.AdminMvSqprdVO">
+		 SELECT
+			A.MV_SQPRD_SEQ_NO
+			, A.LANG_CD
+			, A.MV_SQPRD_CCD
+			, B.SQPRD_NM
+			, FN_GETCODENM('MVSQPRD_DIV', A.MV_SQPRD_CCD, A.LANG_CD) AS MV_CCD_NM
+			, A.RELTD_SQPRD
+			, B.PC_LIST_IMG_PATH
+			, B.PC_LIST_IMG_ORG_FILE_NM
+			, B.PC_LIST_IMG_FILE_NM
+			, B.PC_LIST_IMG_ALT
+			, B.MOBILE_LIST_IMG_PATH 
+			, B.MOBILE_LIST_IMG_ORG_FILE_NM
+			, B.MOBILE_LIST_IMG_FILE_NM
+			, B.MOBILE_LIST_IMG_ALT
+			, A.ORDB
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM			
+			, CASE WHEN (SELECT COUNT(*) FROM MK_SQPRD WHERE SQPRD_SEQ_NO = A.RELTD_SQPRD::integer AND USE_YN='Y') = 0 THEN 'N'
+			ELSE A.USE_YN END USE_YN
+			, CASE WHEN (SELECT COUNT(*) FROM MK_SQPRD WHERE SQPRD_SEQ_NO = A.RELTD_SQPRD::integer AND USE_YN='Y') = 0 THEN FN_GETCODENM('USE_YN', 'N', A.LANG_CD) 
+			ELSE FN_GETCODENM('USE_YN',A.USE_YN, A.LANG_CD)  END USE_YN_NM
+		FROM MK_MV_SQPRD A
+		JOIN MK_SQPRD B
+		ON A.LANG_CD = B.LANG_CD AND A.RELTD_SQPRD::integer = B.SQPRD_SEQ_NO
+		WHERE A.MV_SQPRD_SEQ_NO = #{mvSqprdSeqNo}::integer
+	 </select>
+	 
+	 <insert id="doWrite" parameterType="com.cellosquare.adminapp.admin.mvsqprd.vo.AdminMvSqprdVO" useGeneratedKeys="true" keyProperty="mvSqprdSeqNo">
+		INSERT INTO MK_MV_SQPRD (
+			 LANG_CD
+			, MV_SQPRD_CCD
+			, RELTD_SQPRD
+			, USE_YN
+			, INS_DTM
+			, INS_PERSON_ID
+			, UPD_DTM
+			, UPD_PERSON_ID
+		) VALUES (
+			 #{langCd}
+			, #{mvSqprdCcd}
+			, #{relsqprdSeqNo}
+			, #{useYn}
+			, NOW()
+			, #{insPersonId}
+			, NOW()
+			, #{updPersonId}
+		)
+	</insert>
+	
+	<update id="doUpdate" parameterType="com.cellosquare.adminapp.admin.mvsqprd.vo.AdminMvSqprdVO">
+	UPDATE MK_MV_SQPRD
+	SET
+		MV_SQPRD_CCD					 = #{mvSqprdCcd}
+		, RELTD_SQPRD					 = #{relsqprdSeqNo}
+		, USE_YN 						 = #{useYn}
+		, UPD_DTM 						 = NOW()
+		, UPD_PERSON_ID 				 = #{updPersonId}
+	WHERE MV_SQPRD_SEQ_NO = #{mvSqprdSeqNo}::integer
+	</update>
+	
+	<delete id="doDelete" parameterType="com.cellosquare.adminapp.admin.mvsqprd.vo.AdminMvSqprdVO">
+	DELETE FROM MK_MV_SQPRD
+	WHERE MV_SQPRD_SEQ_NO = #{mvSqprdSeqNo}::integer
+	</delete>
+	
+	<update id="doSortOrder" parameterType="com.cellosquare.adminapp.admin.mvsqprd.vo.AdminMvSqprdVO">
+		UPDATE MK_MV_SQPRD SET
+			ORDB = #{ordb}
+		WHERE MV_SQPRD_SEQ_NO = #{mvSqprdSeqNo}::integer
+	</update>
+	
+	<select id="getPopUpList" parameterType="com.cellosquare.adminapp.admin.goods.vo.AdminGoodsVO" resultType="com.cellosquare.adminapp.admin.goods.vo.AdminGoodsVO">
+		SELECT
+			  A.SQPRD_SEQ_NO
+			, A.LANG_CD
+			, CASE WHEN A.SQPRD_CTGRY = 'GOODS_DIV_03' THEN 'MVSQPRD_02'
+			WHEN A.SQPRD_CTGRY = 'GOODS_DIV_06' THEN 'MVSQPRD_03'
+			ELSE 'MVSQPRD_01' END SQPRD_CTGRY 			
+			, CASE WHEN A.SQPRD_CTGRY = 'GOODS_DIV_03' THEN FN_GETCODENM('MVSQPRD_DIV', 'MVSQPRD_02', A.LANG_CD)
+			WHEN A.SQPRD_CTGRY = 'GOODS_DIV_06' THEN FN_GETCODENM('MVSQPRD_DIV', 'MVSQPRD_03', A.LANG_CD) 
+			ELSE FN_GETCODENM('MVSQPRD_DIV', 'MVSQPRD_01', A.LANG_CD) END SQPRD_CTGRY_NM 	
+			, SQPRD_NM
+		FROM MK_SQPRD A
+		WHERE 1=1
+		AND A.LANG_CD = #{langCd}
+		AND A.USE_YN = 'Y'
+		AND A.SQPRD_SEQ_NO NOT IN (SELECT RELTD_SQPRD::integer FROM MK_MV_SQPRD)
+		<!-- 수정에서 값이 있으면 수정상품의 항목을 제외함 -->
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(sqprdSeqNo) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(sqprdSeqNo)">
+			AND A.SQPRD_SEQ_NO != #{sqprdSeqNo}::integer
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(goodsSearchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(goodsSearchValue)">
+			AND A.SQPRD_NM ILIKE CONCAT ('%', #{goodsSearchValue}, '%')
+		</if>
+		ORDER BY A.SQPRD_SEQ_NO DESC
+		LIMIT #{endRow} OFFSET #{startRow}
+	</select>
+	
+	<select id="popupTotalCount" parameterType="com.cellosquare.adminapp.admin.goods.vo.AdminGoodsVO" resultType="int">
+		SELECT COUNT(*)
+		FROM MK_SQPRD
+		WHERE 1=1
+		AND LANG_CD = #{langCd}
+		AND USE_YN = 'Y'
+		AND SQPRD_SEQ_NO NOT IN (SELECT RELTD_SQPRD::integer FROM MK_MV_SQPRD)
+		<!-- 수정에서 값이 있으면 수정상품의 항목을 제외함 -->
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(sqprdSeqNo) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(sqprdSeqNo)">
+			AND SQPRD_SEQ_NO != #{sqprdSeqNo}::integer
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(goodsSearchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(goodsSearchValue)">
+			AND SQPRD_NM ILIKE CONCAT ('%', #{goodsSearchValue}, '%')
+		</if>
+		
+	</select>
+	
+</mapper>
