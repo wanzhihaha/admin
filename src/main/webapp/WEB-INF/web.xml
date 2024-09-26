@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee; http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <display-name>cellosquare-admin</display-name>
+   
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:spring/*.xml</param-value>
+  </context-param>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+  </listener>
+  <servlet>
+    <servlet-name>appServlet</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:spring/servlet-context.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>appServlet</servlet-name>
+    <url-pattern>*.do</url-pattern>
+    <!-- <url-pattern>*.xml</url-pattern> -->
+  </servlet-mapping>
+  <filter>
+    <filter-name>encodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceEncoding</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>   
+  </filter-mapping>
+  
+  <filter>
+      <filter-name>MultipartFilter</filter-name>
+      <filter-class>org.springframework.web.multipart.support.MultipartFilter</filter-class>
+      <init-param>
+          <param-name>multipartResolverBeanName</param-name>
+          <param-value>multipartResolver</param-value>
+      </init-param>
+  </filter>
+  <filter-mapping>
+      <filter-name>MultipartFilter</filter-name>
+      <url-pattern>*.do</url-pattern>
+  </filter-mapping>
+  
+  <filter>
+    <filter-name>cleanXss</filter-name>
+    <filter-class>com.cellosquare.adminapp.common.filter.CrossScriptingFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>cleanXss</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  <filter>
+    <filter-name>XSS</filter-name>
+    <filter-class>com.navercorp.lucy.security.xss.servletfilter.XssEscapeServletFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>XSS</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  <listener>
+	<listener-class>com.cellosquare.adminapp.common.session.SessionConfig</listener-class>
+  </listener>
+
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  <session-config>
+    <session-timeout>1000</session-timeout>
+  </session-config>
+  <!-- 세션클러스터링 -->
+  <distributable/>
+</web-app>

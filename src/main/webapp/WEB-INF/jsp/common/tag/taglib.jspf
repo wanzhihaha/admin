@@ -1,0 +1,8 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://lab.bluewaves.co.kr/tag/code" prefix="blabCode" %>
+<%@ taglib uri="http://lab.bluewaves.co.kr/tag/message" prefix="blabMessage" %>
+<%@ taglib uri="http://lab.bluewaves.co.kr/tag/property" prefix="blabProperty" %>
+<%@ taglib uri="http://lab.bluewaves.co.kr/tag/util" prefix="blabUtil" %>
+<%@ taglib uri="http://lab.bluewaves.co.kr/tag/paging" prefix="blabPaging" %>
