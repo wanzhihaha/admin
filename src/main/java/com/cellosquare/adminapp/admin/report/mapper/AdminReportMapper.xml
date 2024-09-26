@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.report.mapper.AdminReportMapper">
+
+	<select id="getTotalCount" parameterType="com.cellosquare.adminapp.admin.report.vo.AdminReportVO" resultType="int">
+		SELECT COUNT(*)
+		FROM MK_RPT A
+		WHERE LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+				AND A.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+	</select>
+
+	<select id="getList" parameterType="com.cellosquare.adminapp.admin.report.vo.AdminReportVO" resultType="com.cellosquare.adminapp.admin.report.vo.AdminReportVO">
+		SELECT
+			  A.RPT_SEQ_NO
+			, A.META_SEQ_NO
+			, A.LANG_CD  
+			, A.TITLE_NM
+			, A.RPT_CCD
+			, FN_GETCODENM('REPORT_DIV', A.RPT_CCD, A.LANG_CD) AS RPT_CCD_NM
+			, A.SUMMARY_INFO
+			, A.PC_LIST_IMG_ALT
+			, A.DETL_INFO
+			, A.USE_YN
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+			, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.SRCH_CNT
+			, A.ORDB
+		FROM MK_RPT A
+		WHERE LANG_CD = #{langCd}
+			<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+				AND A.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+			</if>
+		ORDER BY A.RPT_SEQ_NO DESC
+		LIMIT #{endRow} OFFSET #{startRow}
+	</select>
+
+	<insert id="doWrite" parameterType="com.cellosquare.adminapp.admin.report.vo.AdminReportVO" useGeneratedKeys="true" keyProperty="rptSeqNo">
+	INSERT INTO MK_RPT (
+		  META_SEQ_NO
+		, LANG_CD
+		, RPT_CCD
+		, TITLE_NM
+		, SUMMARY_INFO
+		, DETL_INFO
+		, PC_LIST_IMG_PATH
+		, PC_LIST_IMG_ORG_FILE_NM
+		, PC_LIST_IMG_FILE_NM
+		, PC_LIST_IMG_SIZE
+		, PC_LIST_IMG_ALT
+		, PC_DETL_IMG_PATH
+		, PC_DETL_IMG_ORG_FILE_NM
+		, PC_DETL_IMG_FILE_NM
+		, PC_DETL_IMG_SIZE
+		, PC_DETL_IMG_ALT
+		, MOBILE_LIST_IMG_PATH
+		, MOBILE_LIST_IMG_ORG_FILE_NM
+		, MOBILE_LIST_IMG_FILE_NM
+		, MOBILE_LIST_IMG_SIZE
+		, MOBILE_LIST_IMG_ALT
+		, MOBILE_DETL_IMG_PATH
+		, MOBILE_DETL_IMG_ORG_FILE_NM
+		, MOBILE_DETL_IMG_FILE_NM
+		, MOBILE_DETL_IMG_SIZE
+		, MOBILE_DETL_IMG_ALT
+		, INS_PERSON_ID
+		, INS_DTM
+		, UPD_PERSON_ID
+		, UPD_DTM
+		, USE_YN
+		, SRCH_CNT
+	) VALUES (
+		  #{metaSeqNo}::integer
+		, #{langCd}
+		, #{rptCcd}
+		, #{titleNm}
+		, #{summaryInfo}
+		, #{detlInfo}
+		, #{pcListImgPath}
+		, #{pcListImgOrgFileNm}
+		, #{pcListImgFileNm}
+		, #{pcListImgSize}::integer
+		, #{pcListImgAlt}
+		, #{pcDetlImgPath}
+		, #{pcDetlImgOrgFileNm}
+		, #{pcDetlImgFileNm}
+		, #{pcDetlImgSize}::integer
+		, #{pcDetlImgAlt}
+		, #{mobileListImgPath}
+		, #{mobileListImgOrgFileNm}
+		, #{mobileListImgFileNm}
+		, #{mobileListImgSize}::integer
+		, #{mobileListImgAlt}
+		, #{mobileDetlImgPath}
+		, #{mobileDetlImgOrgFileNm}
+		, #{mobileDetlImgFileNm}
+		, #{mobileDetlImgSize}::integer
+		, #{mobileDetlImgAlt}
+		, #{insPersonId}
+		, NOW()
+		, #{updPersonId}
+		, NOW()
+		, #{useYn}
+		, 0
+	)
+	</insert>
+	
+	<select id="getDetail" parameterType="com.cellosquare.adminapp.admin.report.vo.AdminReportVO" resultType="com.cellosquare.adminapp.admin.report.vo.AdminReportVO">
+		 SELECT
+		 	  A.RPT_SEQ_NO
+		 	, A.META_SEQ_NO
+			, A.LANG_CD
+			, A.RPT_CCD
+			, FN_GETCODENM('REPORT_DIV', A.RPT_CCD, A.LANG_CD) AS RPT_CCD_NM
+			, A.TITLE_NM
+			, A.SUMMARY_INFO
+			, A.DETL_INFO		
+			, A.PC_LIST_IMG_PATH
+			, A.PC_LIST_IMG_ORG_FILE_NM
+			, A.PC_LIST_IMG_FILE_NM
+			, A.PC_LIST_IMG_SIZE
+			, A.PC_LIST_IMG_ALT
+			, A.PC_DETL_IMG_PATH
+			, A.PC_DETL_IMG_ORG_FILE_NM
+			, A.PC_DETL_IMG_FILE_NM
+			, A.PC_DETL_IMG_SIZE
+			, A.PC_DETL_IMG_ALT
+			, A.MOBILE_LIST_IMG_PATH 
+			, A.MOBILE_LIST_IMG_ORG_FILE_NM
+			, A.MOBILE_LIST_IMG_FILE_NM
+			, A.MOBILE_LIST_IMG_SIZE 
+			, A.MOBILE_LIST_IMG_ALT
+			, A.MOBILE_DETL_IMG_PATH 
+			, A.MOBILE_DETL_IMG_ORG_FILE_NM
+			, A.MOBILE_DETL_IMG_FILE_NM
+			, A.MOBILE_DETL_IMG_SIZE 
+			, A.MOBILE_DETL_IMG_ALT
+			, A.SRCH_CNT
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+			, TO_CHAR(UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.USE_YN
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+			, A.ORDB
+		FROM MK_RPT A
+		WHERE 1=1
+		AND A.RPT_SEQ_NO = #{rptSeqNo}::integer
+
+	 </select>
+
+
+	<update id="doUpdate" parameterType="com.cellosquare.adminapp.admin.report.vo.AdminReportVO">
+	UPDATE MK_RPT
+	SET
+		  TITLE_NM             				= #{titleNm}
+		, RPT_CCD             				= #{rptCcd}
+		, SUMMARY_INFO		 				= #{summaryInfo}
+		, PC_LIST_IMG_PATH 	 				= #{pcListImgPath}
+		, PC_LIST_IMG_ORG_FILE_NM 			= #{pcListImgOrgFileNm}
+		, PC_LIST_IMG_FILE_NM 				= #{pcListImgFileNm}
+		, PC_LIST_IMG_SIZE 					= #{pcListImgSize}::integer
+		, PC_LIST_IMG_ALT 					= #{pcListImgAlt}
+		, PC_DETL_IMG_PATH 					= #{pcDetlImgPath}
+		, PC_DETL_IMG_ORG_FILE_NM 			= #{pcDetlImgOrgFileNm}
+		, PC_DETL_IMG_FILE_NM 				= #{pcDetlImgFileNm}
+		, PC_DETL_IMG_SIZE					= #{pcDetlImgSize}::integer
+		, PC_DETL_IMG_ALT 					= #{pcDetlImgAlt}
+		, MOBILE_LIST_IMG_PATH 				= #{mobileListImgPath}
+		, MOBILE_LIST_IMG_ORG_FILE_NM		= #{mobileListImgOrgFileNm}
+		, MOBILE_LIST_IMG_FILE_NM 			= #{mobileListImgFileNm}
+		, MOBILE_LIST_IMG_SIZE 				= #{mobileListImgSize}::integer
+		, MOBILE_LIST_IMG_ALT 				= #{mobileListImgAlt}
+		, MOBILE_DETL_IMG_PATH 				= #{mobileDetlImgPath}
+		, MOBILE_DETL_IMG_ORG_FILE_NM 		= #{mobileDetlImgOrgFileNm}
+		, MOBILE_DETL_IMG_FILE_NM 			= #{mobileDetlImgFileNm}
+		, MOBILE_DETL_IMG_SIZE 				= #{mobileDetlImgSize}::integer
+		, MOBILE_DETL_IMG_ALT 				= #{mobileDetlImgAlt}
+		, USE_YN 							= #{useYn} 
+		, DETL_INFO 						= #{detlInfo}
+		, UPD_DTM 							= NOW()
+		, UPD_PERSON_ID 					= #{updPersonId}
+	WHERE RPT_SEQ_NO = #{rptSeqNo}::integer
+	</update>
+
+	<delete id="doDelete" parameterType="com.cellosquare.adminapp.admin.report.vo.AdminReportVO">
+	DELETE FROM MK_RPT
+	WHERE RPT_SEQ_NO = #{rptSeqNo}::integer
+	</delete>
+
+	<update id="doSortOrder" parameterType="com.cellosquare.adminapp.admin.report.vo.AdminReportVO">
+		UPDATE MK_RPT SET
+			ORDB = #{ordb}
+		WHERE RPT_SEQ_NO = #{rptSeqNo}::integer
+	</update>
+</mapper>
