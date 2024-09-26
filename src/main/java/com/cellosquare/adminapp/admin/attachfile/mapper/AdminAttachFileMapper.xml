@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.attachfile.mapper.AdminAttachFileMapper">
+
+	<select id="getAttachFileList" parameterType="com.cellosquare.adminapp.admin.attachfile.vo.AdminAttachFileVO" resultType="com.cellosquare.adminapp.admin.attachfile.vo.AdminAttachFileVO">
+		SELECT 
+			* 
+		FROM MK_ATCH_FILE 
+		WHERE CONTENTS_SEQ_NO=#{contentsSeqNo}::integer 
+		AND CONTENTS_CCD = #{contentsCcd} 
+		ORDER BY ORDB ASC
+	</select>
+	
+	
+	<insert id="registAttachFile" parameterType="com.cellosquare.adminapp.admin.attachfile.vo.AdminAttachFileVO">
+		INSERT INTO MK_ATCH_FILE (
+			CONTENTS_SEQ_NO
+			, CONTENTS_CCD
+			, ORDB
+			, ATCH_FILE_PATH
+			, ATCH_ORG_FILE_NM
+			, ATCH_FILE_NM
+			, ATCH_FILE_SIZE
+			, INS_DTM
+			, INS_PERSON_ID
+			, UPD_DTM
+			, UPD_PERSON_ID
+		) VALUES (
+			#{contentsSeqNo}::integer
+			, #{contentsCcd}
+			, #{ordb}::integer
+			, #{atchFilePath}
+			, #{atchOrgFileNm}
+			, #{atchFileNm}
+			, #{atchFileSize}::integer
+			, NOW()
+			, #{insPersonId}
+			, NOW()
+			, #{insPersonId}
+		)
+	</insert>
+	
+	<select id="getDetail" parameterType="com.cellosquare.adminapp.admin.attachfile.vo.AdminAttachFileVO" resultType="com.cellosquare.adminapp.admin.attachfile.vo.AdminAttachFileVO">
+		SELECT 
+			* 
+		FROM MK_ATCH_FILE 
+		WHERE CONTENTS_SEQ_NO=#{contentsSeqNo}::integer 
+		AND CONTENTS_CCD = #{contentsCcd}
+		AND ORDB = #{ordb}::integer
+	</select>
+	
+	<delete id="doAttachFileDel" parameterType="com.cellosquare.adminapp.admin.attachfile.vo.AdminAttachFileVO">
+		DELETE FROM MK_ATCH_FILE
+		WHERE CONTENTS_SEQ_NO=#{contentsSeqNo}::integer 
+		AND CONTENTS_CCD = #{contentsCcd}
+	</delete>
+</mapper>
