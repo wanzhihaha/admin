@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM
+        "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <!-- 콘솔 로그 -->
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%p] %d{yyyy-MM-dd HH:mm:ss.SSS} (%F\:%L) %M \: %m%n"/>
+        </layout>
+    </appender>
+
+	<!-- 按size -->
+	<appender name="fileMaxAppenderAll" class="org.apache.log4j.RollingFileAppender">
+		<param name="threshold" value="ERROR" />
+		<param name="file" value="${catalina.base}/logs/system/rolling_log.log" />
+		<param name="maxFileSize" value="20MB" />
+		<param name="maxBackupIndex" value="5" />
+		<param name="append" value="false" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%p] %d{yyyy-MM-dd HH:mm:ss.SSS} (%F\:%L) %M \: %m%n"/>
+		</layout>
+	</appender>
+
+    <!-- Application Loggers -->
+    <logger name="com.oilbankcard.oilmarket">
+        <level value="error"/>
+    </logger>
+
+    <!-- 3rd party Loggers -->
+    <!-- 3rdparty Loggers -->
+	<logger name="org.springframework.core">
+		<level value="error" />
+	</logger>
+	
+	<logger name="org.springframework.beans">
+		<level value="error" />
+	</logger>
+	
+	<logger name="org.springframework.context">
+		<level value="error" />
+	</logger>
+
+	<logger name="org.springframework.web">
+		<level value="error" />
+	</logger>
+	
+	<logger name="jdbc.sqltiming">
+		<level value="error" />
+	</logger>
+	
+	<!-- Query Loggers -->
+	<logger name="jdbc.sqlonly" additivity="false"> 
+		<level value="error"/>
+	</logger>
+	 
+	<logger name="jdbc.resultsettable" additivity="false"> 
+		<level value="error"/>
+	</logger>
+	
+	<!-- Root Logger -->
+	<root>
+		<priority value="error" />
+		<appender-ref ref="fileMaxAppenderAll" />
+	</root>
+
+</log4j:configuration>
