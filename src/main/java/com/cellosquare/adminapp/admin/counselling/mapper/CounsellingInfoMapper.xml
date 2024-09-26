@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.counselling.mapper.CounsellingInfoMapper">
+
+    <select id="selectUserInfo" parameterType="com.cellosquare.adminapp.admin.counselling.vo.CounsellingInfoVO" resultType="com.cellosquare.adminapp.admin.counselling.vo.CounsellingInfoVO">
+		select
+			ROW_NUMBER () OVER (ORDER BY create_date asc) as data_no
+			,to_char(create_date,'yyyy-MM-dd HH24:mm:ss') as create_date_str
+			,create_date
+			, TYPE
+			, SEQ_NO
+			, FIRST_NAME
+			, LAST_NAME
+			, COMPANY
+			, EMAIL_ADDRESS
+			, MOBILE_PHONE
+			, CASE WHEN A.TYPE = 'whpp' OR A.TYPE = 'market' THEN A.CATEGORY ELSE A.TITLE END AS TITLE
+			, HQ_DEPARTMENT
+			, SOLUTION_OF_INTEREST
+			, COMMENT
+			, CASE WHEN A.TYPE = 'whpp' THEN '白皮书' WHEN A.TYPE = 'market' THEN '市场趋势' ELSE A.CATEGORY END AS CATEGORY
+			, TRANS_MODE
+			, TRANS_DEPT_POINT
+			, TRANS_DEST
+			, ESTIMATED_SHIPPING_DATE
+			, VOL_AND_QTY
+			, PRODUCT_URL
+		    ,name
+		    ,source
+		     ,estimated_monthly_logistics_cost
+			,case when HQ3RD_OPT_IN='Yes' then 'Y' else  'N' end as HQ3RD_OPT_IN
+			,case when HQ_EMAIL_OPT_IN='Yes' then 'Y' else  'N' end as HQ_EMAIL_OPT_IN
+			, UNIQUE_CODE
+			from MK_USER_INFO A where 1 = 1
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(category) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(category)">
+			AND (A.CATEGORY = #{category} OR A.TYPE = #{category})
+		</if>
+
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(startDate) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(startDate)
+			  and @com.bluewaves.lab.util.MyBatisUtil@isNotNull(endDate) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(endDate)">
+			AND	to_timestamp(#{startDate},'yyyy-MM-dd hh24:mi:ss') &lt; A.create_date and  to_timestamp(#{endDate},'yyyy-MM-dd hh24:mi:ss') &gt; A.create_date
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(source) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(source)">
+			AND A.source = #{source}
+		</if>
+		order by A.create_date desc
+	</select>
+
+
+	<select id="selectUserInfoCount" parameterType="com.cellosquare.adminapp.admin.counselling.vo.CounsellingInfoVO" resultType="int">
+		select count (*)
+		from MK_USER_INFO A where 1 = 1
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(category) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(category)">
+			AND (A.CATEGORY = #{category} OR A.TYPE = #{category})
+		</if>
+
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(startDate) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(startDate)
+			  and @com.bluewaves.lab.util.MyBatisUtil@isNotNull(endDate) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(endDate)">
+			AND	to_timestamp(#{startDate},'yyyy-MM-dd hh24:mi:ss') &lt; A.create_date and  to_timestamp(#{endDate},'yyyy-MM-dd hh24:mi:ss') &gt; A.create_date
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(source) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(source)">
+			AND A.source = #{source}
+		</if>
+	</select>
+
+	<insert id="doWriteLog" parameterType="com.cellosquare.adminapp.admin.counselling.vo.CounsellingInfoVO">
+		INSERT INTO MK_OPERATION_LOG (
+			ID
+			, DOWNLOAD_TYPE
+			, START_DATE
+			, END_DATE
+			, SUCCESS_YN
+			, CREATE_DATE
+			, CREATE_USER
+		) VALUES (
+			#{id}
+			, #{category}
+			, to_timestamp(#{startDate},'yyyy-MM-dd hh24:mi:ss')
+			, to_timestamp(#{endDate},'yyyy-MM-dd hh24:mi:ss')
+			, #{successYn}
+			, NOW()
+			, #{operationUser}
+		)
+	</insert>
+</mapper>

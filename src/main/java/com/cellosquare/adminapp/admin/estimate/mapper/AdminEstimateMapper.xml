@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    20220617 update
+    AdminEstimateMapper.xml
+    @author juru.jia
+    @Date : 2022/06/17
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.estimate.mapper.AdminEstimateMapper">
+
+    <select id="getTotalCount" parameterType="com.cellosquare.adminapp.admin.estimate.vo.AdminEstimateVO"
+            resultType="int">
+        SELECT COUNT(1)
+        FROM (SELECT *
+        FROM MK_QUOTE_API_HISTORY
+        <include refid="select_export_where"/>
+        ) A
+        LEFT JOIN MK_QUOTE_SEARCH_RECORD B
+        ON A.SQ_NO = B.SQ_NO
+    </select>
+
+    <select id="getList" parameterType="com.cellosquare.adminapp.admin.estimate.vo.AdminEstimateVO"
+            resultType="com.cellosquare.adminapp.admin.estimate.vo.AdminEstimateVO">
+        SELECT
+        <include refid="select_export"/>
+        FROM (SELECT *
+        FROM MK_QUOTE_API_HISTORY
+        <include refid="select_export_where"/>
+        ) A
+        LEFT JOIN MK_QUOTE_SEARCH_RECORD B
+        ON A.SQ_NO = B.SQ_NO
+        ORDER BY A.SQ_NO desc ,B.quote_result_ord asc,CAST(B.QUOTE_FARE AS numeric)
+    </select>
+
+    <select id="getListByPage" parameterType="com.cellosquare.adminapp.admin.estimate.vo.AdminEstimateVO"
+            resultType="com.cellosquare.adminapp.admin.estimate.vo.AdminEstimateVO">
+        SELECT
+        <include refid="select_export"/>
+        FROM (SELECT *
+        FROM MK_QUOTE_API_HISTORY
+        <include refid="select_export_where"/>
+        ) A
+        LEFT JOIN MK_QUOTE_SEARCH_RECORD B
+        ON A.SQ_NO = B.SQ_NO
+        ORDER BY A.SQ_NO desc ,B.quote_result_ord asc,CAST(B.QUOTE_FARE AS DECIMAL)
+        LIMIT #{endRow} OFFSET #{startRow}
+    </select>
+
+
+    <sql id="select_export_where">
+        <where>
+            <if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchBeginDe) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchBeginDe)">
+                AND to_timestamp(#{searchBeginDe},'yyyy-MM-dd hh24:mi:ss') &lt;= SEND_DATE
+            </if>
+            <if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchEndDe) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchEndDe)">
+                AND to_timestamp(#{searchEndDe},'yyyy-MM-dd hh24:mi:ss') &gt;= SEND_DATE
+            </if>
+            <if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(svcMedCtgryCd) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(svcMedCtgryCd)">
+                AND svc_med_ctgry_cd = #{svcMedCtgryCd}
+            </if>
+            <if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(address) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(address)">
+                AND (arrp_nm ilike CONCAT ('%', #{address}, '%') or depp_nm ilike CONCAT ('%', #{address}, '%') or access_ip ilike CONCAT ('%', #{address}, '%') )
+            </if>
+        </where>
+    </sql>
+
+    <sql id="select_export">
+        TO_CHAR
+        (A.SEND_DATE,'yyyy-MM-dd hh24:mi:ss') AS SEND_DATE,
+        A.SQ_NO,
+        A.SVC_MED_CTGRY_CD AS svcMedCtgryCode,
+        (SELECT
+        DEFAULT_CD_NAME
+        FROM MK_QUOTE_CD
+        WHERE GRP_CD = 'QUOTE_CATEGORY_GRP'
+
+        AND CD = A.SVC_MED_CTGRY_CD) AS SVC_MED_CTGRY_CD,
+        (CASE WHEN A.SVC_CLASS_CD = 'PLN' THEN '-' ELSE A.SVC_CLASS_CD END) AS SVC_CLASS_CD,
+        A.DEPP_NM,
+        A.ARRP_NM,
+        (CASE WHEN
+        A.SVC_CLASS_CD = 'FCL'
+        THEN CONCAT(A.SEARCH_VALUE,' x ',(SELECT
+        DEFAULT_CD_NAME
+        FROM MK_QUOTE_CD
+        WHERE GRP_CD = 'FCL_SELECT_GRP'
+
+        AND CD = A.SEARCH_UNIT))
+        ELSE CONCAT(A.SEARCH_VALUE,' ',UPPER(A.SEARCH_UNIT))
+        END) AS ITEM_INFO,
+        (CASE WHEN
+        (SELECT COUNT(1) FROM MK_QUOTE_SEARCH_RECORD WHERE SQ_NO = A.SQ_NO) &gt; 0
+        THEN 'Y'
+        ELSE 'N'
+        END) AS SEARCH_RECORD_YN,
+        B.QUOTE_CNT,
+        B.CARRIER_NAME,
+        B.QUOTE_CURRENCY,
+        B.QUOTE_FARE,
+        A.access_ip,
+        A.return_reason,
+        A.product_type,
+        (CASE WHEN
+        (SELECT COUNT(1) FROM MK_QUOTE_MAIL_HISTORY C WHERE C.SQ_NO = A.SQ_NO ) &gt; 0
+        THEN 'Y'
+        ELSE 'N'
+        END) AS EMAIL_YN
+    </sql>
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.code.mapper.ApiCodeMapper">
+	<update id="setCodeByGrpCd" parameterType="com.cellosquare.adminapp.admin.code.vo.ApiCodeVO">
+		update mk_cd_mng set cd = #{cd} where grp_cd = 'BARGAIN_SWITCH'
+	</update>
+
+	<select id="getApiCodeList" parameterType="com.cellosquare.adminapp.admin.code.vo.ApiCodeVO" resultType="com.cellosquare.adminapp.admin.code.vo.ApiCodeVO">
+		SELECT
+			CD
+			, CD_NM
+		FROM MK_CD_MNG
+	 	WHERE  GRP_CD = #{grpCd}	
+	 	AND LANG_CD = #{langCd}
+	 	ORDER BY ORDB ASC
+	</select>
+	
+	
+	<select id="getApiCodeFirst" parameterType="com.cellosquare.adminapp.admin.code.vo.ApiCodeVO" resultType="com.cellosquare.adminapp.admin.code.vo.ApiCodeVO">
+		SELECT
+			CD
+		FROM MK_CD_MNG
+	 	WHERE  GRP_CD = #{grpCd}	
+	 	AND LANG_CD = #{langCd}
+	 	ORDER BY ORDB ASC
+	 	LIMIT 1
+	</select>
+	
+	<select id="getCategoryNm" parameterType="com.cellosquare.adminapp.admin.code.vo.ApiCodeVO" resultType="String">
+		SELECT
+			CD_NM
+		FROM MK_CD_MNG
+	 	WHERE  GRP_CD = #{grpCd}	
+	 	AND CD = #{cd}
+	 	AND LANG_CD = #{langCd}
+	 	ORDER BY ORDB ASC
+	</select>
+	<select id="getApiCodeByGrpCd" resultType="com.cellosquare.adminapp.admin.code.vo.ApiCodeVO">
+		select cd, lang_cd, cd_nm,cd_desc from mk_cd_mng where grp_cd = #{grpCd}
+	</select>
+</mapper>
