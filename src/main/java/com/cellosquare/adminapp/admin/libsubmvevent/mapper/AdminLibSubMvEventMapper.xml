@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.libsubmvevent.mapper.AdminLibSubMvEventMapper">
+
+	<select id="getTotalCount" parameterType="com.cellosquare.adminapp.admin.libsubmvevent.vo.AdminLibSubMvEventVO" resultType="int">
+		SELECT COUNT(*)
+		FROM MK_LIB_SUB_MEV A
+		JOIN MK_EVT B 
+		ON A.RELTD_EVT::integer = B.EVT_SEQ_NO
+		WHERE A.LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+           AND B.EVT_CCD = #{searchType}
+        </if>
+        <if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND B.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+	</select>
+	
+	<select id="getList" parameterType="com.cellosquare.adminapp.admin.libsubmvevent.vo.AdminLibSubMvEventVO" resultType="com.cellosquare.adminapp.admin.libsubmvevent.vo.AdminLibSubMvEventVO">
+		SELECT
+			  A.LIB_SUB_MEV_SEQ_NO
+			, A.LANG_CD
+			, B.EVT_CCD
+			, FN_GETCODENM('EVT_DIV', B.EVT_CCD, A.LANG_CD) AS EVT_CCD_NM
+			, A.RELTD_EVT
+			, B.TITLE_NM
+			, A.PC_LIST_IMG_PATH
+			, A.PC_LIST_IMG_ORG_FILE_NM
+			, A.PC_LIST_IMG_FILE_NM
+			, A.PC_LIST_IMG_ALT
+			, A.MOBILE_LIST_IMG_PATH 
+			, A.MOBILE_LIST_IMG_ORG_FILE_NM
+			, A.MOBILE_LIST_IMG_FILE_NM
+			, A.MOBILE_LIST_IMG_ALT
+			, A.ORDB
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+			, CASE WHEN (SELECT COUNT(*) FROM MK_EVT WHERE EVT_SEQ_NO = A.RELTD_EVT::integer AND USE_YN='Y') = 0 THEN 'N'
+			ELSE A.USE_YN END USE_YN
+			, CASE WHEN (SELECT COUNT(*) FROM MK_EVT WHERE EVT_SEQ_NO = A.RELTD_EVT::integer AND USE_YN='Y') = 0 THEN FN_GETCODENM('USE_YN', 'N', A.LANG_CD) 
+			ELSE FN_GETCODENM('USE_YN',A.USE_YN, A.LANG_CD)  END USE_YN_NM
+		FROM MK_LIB_SUB_MEV A
+		JOIN MK_EVT B 
+		ON A.RELTD_EVT::integer = B.EVT_SEQ_NO
+		WHERE A.LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+           AND B.EVT_CCD = #{searchType}
+        </if>
+        <if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND B.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+		ORDER BY A.LIB_SUB_MEV_SEQ_NO DESC 
+	</select>
+	
+	<select id="getDetail" parameterType="com.cellosquare.adminapp.admin.libsubmvevent.vo.AdminLibSubMvEventVO" resultType="com.cellosquare.adminapp.admin.libsubmvevent.vo.AdminLibSubMvEventVO">
+		SELECT
+			  A.LIB_SUB_MEV_SEQ_NO
+			, A.LANG_CD
+			, B.EVT_CCD
+			, FN_GETCODENM('EVT_DIV', B.EVT_CCD, A.LANG_CD) AS EVT_CCD_NM
+			, A.RELTD_EVT
+			, B.TITLE_NM
+			, A.PC_LIST_IMG_PATH
+			, A.PC_LIST_IMG_ORG_FILE_NM
+			, A.PC_LIST_IMG_FILE_NM
+			, A.PC_LIST_IMG_ALT
+			, A.MOBILE_LIST_IMG_PATH 
+			, A.MOBILE_LIST_IMG_ORG_FILE_NM
+			, A.MOBILE_LIST_IMG_FILE_NM
+			, A.MOBILE_LIST_IMG_ALT
+			, A.ORDB
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+			, CASE WHEN (SELECT COUNT(*) FROM MK_EVT WHERE EVT_SEQ_NO = A.RELTD_EVT::integer AND USE_YN='Y') = 0 THEN 'N'
+			ELSE A.USE_YN END USE_YN
+			, CASE WHEN (SELECT COUNT(*) FROM MK_EVT WHERE EVT_SEQ_NO = A.RELTD_EVT::integer AND USE_YN='Y') = 0 THEN FN_GETCODENM('USE_YN', 'N', A.LANG_CD) 
+			ELSE FN_GETCODENM('USE_YN',A.USE_YN, A.LANG_CD)  END USE_YN_NM
+		FROM MK_LIB_SUB_MEV A
+		JOIN MK_EVT B 
+		ON A.RELTD_EVT::integer = B.EVT_SEQ_NO
+		WHERE A.LIB_SUB_MEV_SEQ_NO = #{libSubMevSeqNo}::integer
+	 </select>
+	 
+	 <insert id="doWrite" parameterType="com.cellosquare.adminapp.admin.libsubmvevent.vo.AdminLibSubMvEventVO" useGeneratedKeys="true" keyProperty="libSubMevSeqNo">
+		INSERT INTO MK_LIB_SUB_MEV (
+			 LANG_CD
+			, RELTD_EVT
+			, PC_LIST_IMG_PATH
+			, PC_LIST_IMG_ORG_FILE_NM
+			, PC_LIST_IMG_FILE_NM
+			, PC_LIST_IMG_SIZE
+			, PC_LIST_IMG_ALT
+			, MOBILE_LIST_IMG_PATH 
+			, MOBILE_LIST_IMG_ORG_FILE_NM
+			, MOBILE_LIST_IMG_FILE_NM
+			, MOBILE_LIST_IMG_SIZE 
+			, MOBILE_LIST_IMG_ALT
+			, USE_YN
+			, INS_DTM
+			, INS_PERSON_ID
+			, UPD_DTM
+			, UPD_PERSON_ID
+		) VALUES (
+			 #{langCd}
+			, #{relEvtSeqNo}
+			, #{pcListImgPath}
+			, #{pcListImgOrgFileNm}
+			, #{pcListImgFileNm}
+			, #{pcListImgSize}::integer
+			, #{pcListImgAlt}
+			, #{mobileListImgPath}
+			, #{mobileListImgOrgFileNm}
+			, #{mobileListImgFileNm}
+			, #{mobileListImgSize}::integer
+			, #{mobileListImgAlt}
+			, #{useYn}
+			, NOW()
+			, #{insPersonId}
+			, NOW()
+			, #{updPersonId}
+		)
+	</insert>
+	
+	<update id="doUpdate" parameterType="com.cellosquare.adminapp.admin.libsubmvevent.vo.AdminLibSubMvEventVO">
+	UPDATE MK_LIB_SUB_MEV
+	SET
+		 RELTD_EVT						 = #{relEvtSeqNo}
+		, PC_LIST_IMG_PATH			     = #{pcListImgPath}
+		, PC_LIST_IMG_ORG_FILE_NM        = #{pcListImgOrgFileNm}
+		, PC_LIST_IMG_FILE_NM            = #{pcListImgFileNm}
+		, PC_LIST_IMG_SIZE               = #{pcListImgSize}::integer
+		, PC_LIST_IMG_ALT                = #{pcListImgAlt}
+		, MOBILE_LIST_IMG_PATH			 = #{mobileListImgPath}
+		, MOBILE_LIST_IMG_ORG_FILE_NM    = #{mobileListImgOrgFileNm}
+		, MOBILE_LIST_IMG_FILE_NM        = #{mobileListImgFileNm}
+		, MOBILE_LIST_IMG_SIZE           = #{mobileListImgSize}::integer
+		, MOBILE_LIST_IMG_ALT            = #{mobileListImgAlt}
+		, USE_YN 						 = #{useYn}
+		, UPD_DTM 						 = NOW()
+		, UPD_PERSON_ID 				 = #{updPersonId}
+	WHERE LIB_SUB_MEV_SEQ_NO = #{libSubMevSeqNo}::integer
+	</update>
+	
+	<delete id="doDelete" parameterType="com.cellosquare.adminapp.admin.libsubmvevent.vo.AdminLibSubMvEventVO">
+	DELETE FROM MK_LIB_SUB_MEV
+	WHERE LIB_SUB_MEV_SEQ_NO = #{libSubMevSeqNo}::integer
+	</delete>
+	
+	<update id="doSortOrder" parameterType="com.cellosquare.adminapp.admin.libsubmvevent.vo.AdminLibSubMvEventVO">
+		UPDATE MK_LIB_SUB_MEV SET
+			ORDB = #{ordb}
+		WHERE LIB_SUB_MEV_SEQ_NO = #{libSubMevSeqNo}::integer
+	</update>
+	
+	<select id="getPopUpList" parameterType="com.cellosquare.adminapp.admin.event.vo.AdminEventVO" resultType="com.cellosquare.adminapp.admin.event.vo.AdminEventVO">
+		SELECT
+			  A.EVT_SEQ_NO
+			, A.LANG_CD
+			, A.EVT_CCD
+			, FN_GETCODENM('EVT_DIV', A.EVT_CCD, A.LANG_CD) AS EVT_CCD_NM 	
+			, A.TITLE_NM
+			, A.USE_YN
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM 
+		FROM MK_EVT A
+		WHERE 1=1
+		AND A.LANG_CD = #{langCd}
+		AND A.USE_YN = 'Y'
+		AND A.EVT_SEQ_NO NOT IN (SELECT RELTD_EVT::integer FROM MK_LIB_SUB_MEV)
+		<!-- 수정에서 값이 있으면 수정상품의 항목을 제외함 -->
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(evtSeqNo) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(evtSeqNo)">
+			AND A.EVT_SEQ_NO != #{evtSeqNo}::integer
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(eventSearchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(eventSearchValue)">
+			AND A.TITLE_NM ILIKE CONCAT ('%', #{eventSearchValue}, '%')
+		</if>
+		ORDER BY A.EVT_SEQ_NO DESC
+		LIMIT #{endRow} OFFSET #{startRow}
+	</select>
+	
+	<select id="popupTotalCount" parameterType="com.cellosquare.adminapp.admin.event.vo.AdminEventVO" resultType="int">
+		SELECT COUNT(*)
+		FROM MK_EVT
+		WHERE 1=1
+		AND LANG_CD = #{langCd}
+		AND USE_YN = 'Y'
+		AND EVT_SEQ_NO NOT IN (SELECT RELTD_EVT::integer FROM MK_LIB_SUB_MEV)
+		<!-- 수정에서 값이 있으면 수정상품의 항목을 제외함 -->
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(evtSeqNo) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(evtSeqNo)">
+			AND EVT_SEQ_NO != #{evtSeqNo}::integer
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(eventSearchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(eventSearchValue)">
+			AND TITLE_NM ILIKE CONCAT ('%', #{eventSearchValue}, '%')
+		</if>
+		
+	</select>
+	
+</mapper>

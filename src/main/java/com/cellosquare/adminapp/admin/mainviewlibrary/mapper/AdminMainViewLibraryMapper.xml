@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.mainviewlibrary.mapper.AdminMainViewLibraryMapper">
+		
+	<select id="getTotalCount" parameterType="com.cellosquare.adminapp.admin.mainviewlibrary.vo.AdminMainViewLibraryVO" resultType="int">
+			SELECT 
+				COUNT(A.*) AS COUNT 
+			FROM ( 
+				SELECT
+					A.MV_LIB_CCD
+					, FN_GETCODENM('MVLIB_DIV', A.MV_LIB_CCD, A.LANG_CD) AS LIB_CCD1_NM
+					, B.EVT_CCD AS LIB_CCD2
+					, FN_GETCODENM('EVT_DIV', EVT_CCD, A.LANG_CD) AS LIB_CCD2_NM
+					, B.TITLE_NM
+				FROM MK_MV_LIB A
+				INNER JOIN MK_EVT AS B
+				ON A.LANG_CD = B.LANG_CD AND A.RELTD_LIB::INTEGER = B.EVT_SEQ_NO AND A.MV_LIB_CCD = 'MVLIB_01'
+				UNION ALL
+				SELECT
+					A.MV_LIB_CCD
+					, FN_GETCODENM('MVLIB_DIV', A.MV_LIB_CCD, A.LANG_CD) AS LIB_CCD1_NM
+					, C.NEWS_CCD1 AS LIB_CCD2
+					, FN_GETCODENM('CELLO_NEWS', NEWS_CCD1, A.LANG_CD) AS LIB_CCD2_NM
+					, C.TITLE_NM
+				FROM MK_MV_LIB A
+				INNER JOIN MK_CELLO_NEWS AS C
+				ON A.LANG_CD = C.LANG_CD AND A.RELTD_LIB::INTEGER = C.NEWS_SEQ_NO AND A.MV_LIB_CCD = 'MVLIB_02'
+				UNION ALL
+				SELECT
+					A.MV_LIB_CCD
+					, FN_GETCODENM('MVLIB_DIV', A.MV_LIB_CCD, A.LANG_CD) AS LIB_CCD1_NM
+					, D.BLOG_CCD1 AS LIB_CCD2
+					, FN_GETCODENM('BLOG_DIV', BLOG_CCD1, A.LANG_CD) AS LIB_CCD2_NM
+					, D.TITLE_NM
+				FROM MK_MV_LIB A
+				INNER JOIN MK_BLOG AS D
+				ON A.LANG_CD = D.LANG_CD AND A.RELTD_LIB::INTEGER = D.BLOG_SEQ_NO AND A.MV_LIB_CCD = 'MVLIB_03'
+				UNION ALL 
+				SELECT
+					A.MV_LIB_CCD
+					, FN_GETCODENM('MVLIB_DIV', A.MV_LIB_CCD, A.LANG_CD) AS LIB_CCD1_NM
+					, E.RPT_CCD AS LIB_CCD2
+					, FN_GETCODENM('REPORT_DIV', RPT_CCD, A.LANG_CD) AS LIB_CCD2_NM
+					, E.TITLE_NM
+				FROM MK_MV_LIB A
+				INNER JOIN MK_RPT AS E
+				ON A.LANG_CD = E.LANG_CD AND A.RELTD_LIB::INTEGER = E.RPT_SEQ_NO AND A.MV_LIB_CCD = 'MVLIB_04'
+			) A WHERE 1=1 and MV_LIB_CCD  in ('MVLIB_03','MVLIB_04')
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+			AND MV_LIB_CCD = #{searchType}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType2) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType2)">
+			AND LIB_CCD2 = #{searchType2}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND  TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if> 
+	</select>
+	
+	<select id="getList" parameterType="com.cellosquare.adminapp.admin.mainviewlibrary.vo.AdminMainViewLibraryVO" resultType="com.cellosquare.adminapp.admin.mainviewlibrary.vo.AdminMainViewLibraryVO">
+			SELECT 
+				A.*
+			FROM ( 
+				SELECT
+					  A.MV_LIB_SEQ_NO
+					, A.LANG_CD
+					, A.MV_LIB_CCD
+					, FN_GETCODENM('MVLIB_DIV', A.MV_LIB_CCD, A.LANG_CD) AS LIB_CCD1_NM
+					, B.EVT_CCD AS LIB_CCD2
+					, FN_GETCODENM('EVT_DIV', EVT_CCD, A.LANG_CD) AS LIB_CCD2_NM
+					, B.TITLE_NM 
+					, B.MOBILE_LIST_IMG_ALT AS PC_LIST_IMG_ALT
+					, A.RELTD_LIB
+					, A.USE_YN
+					, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+					, A.ORDB
+					, A.INS_PERSON_ID 
+					, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+					, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM 
+					, A.UPD_PERSON_ID
+					, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+					, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+					, CASE WHEN (SELECT COUNT(*) FROM MK_EVT WHERE EVT_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN 'N'
+						ELSE A.USE_YN END USE_YN
+					, CASE WHEN (SELECT COUNT(*) FROM MK_EVT WHERE EVT_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN FN_GETCODENM('USE_YN', 'N', A.LANG_CD) 
+						ELSE FN_GETCODENM('USE_YN',A.USE_YN, A.LANG_CD)  END USE_YN_NM
+				FROM MK_MV_LIB A
+				INNER JOIN MK_EVT AS B
+				ON A.LANG_CD = B.LANG_CD AND A.RELTD_LIB::INTEGER = B.EVT_SEQ_NO AND A.MV_LIB_CCD = 'MVLIB_01'
+				WHERE 1=1
+				AND A.LANG_CD = #{langCd}
+				UNION ALL
+				SELECT
+					  A.MV_LIB_SEQ_NO
+					, A.LANG_CD
+					, A.MV_LIB_CCD
+					, FN_GETCODENM('MVLIB_DIV', A.MV_LIB_CCD, A.LANG_CD) AS LIB_CCD1_NM
+					, C.NEWS_CCD1 AS LIB_CCD2
+					, FN_GETCODENM('CELLO_NEWS', NEWS_CCD1, A.LANG_CD) AS LIB_CCD2_NM
+					, C.TITLE_NM
+					, C.PC_LIST_IMG_ALT
+					, A.RELTD_LIB
+					, A.USE_YN
+					, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+					, A.ORDB
+					, A.INS_PERSON_ID 
+					, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+					, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM 
+					, A.UPD_PERSON_ID
+					, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+					, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+					, CASE WHEN (SELECT COUNT(*) FROM MK_CELLO_NEWS WHERE NEWS_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN 'N'
+						ELSE A.USE_YN END USE_YN
+					, CASE WHEN (SELECT COUNT(*) FROM MK_CELLO_NEWS WHERE NEWS_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN FN_GETCODENM('USE_YN', 'N', A.LANG_CD) 
+						ELSE FN_GETCODENM('USE_YN',A.USE_YN, A.LANG_CD)  END USE_YN_NM
+				FROM MK_MV_LIB A
+				INNER JOIN MK_CELLO_NEWS AS C
+				ON A.LANG_CD = C.LANG_CD AND A.RELTD_LIB::INTEGER = C.NEWS_SEQ_NO AND A.MV_LIB_CCD = 'MVLIB_02'
+				WHERE 1=1
+				AND A.LANG_CD = #{langCd}
+				UNION ALL
+				SELECT
+					  A.MV_LIB_SEQ_NO
+					, A.LANG_CD
+					, A.MV_LIB_CCD
+					, FN_GETCODENM('MVLIB_DIV', A.MV_LIB_CCD, A.LANG_CD) AS LIB_CCD1_NM
+					, D.BLOG_CCD1 AS LIB_CCD2 
+					, FN_GETCODENM('BLOG_DIV', BLOG_CCD1, A.LANG_CD) AS LIB_CCD2_NM
+					, D.TITLE_NM
+					, D.PC_LIST_IMG_ALT
+					, A.RELTD_LIB
+					, A.USE_YN
+					, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+					, A.ORDB
+					, A.INS_PERSON_ID 
+					, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+					, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM 
+					, A.UPD_PERSON_ID
+					, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+					, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+					, CASE WHEN (SELECT COUNT(*) FROM MK_BLOG WHERE BLOG_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN 'N'
+					ELSE A.USE_YN END USE_YN
+					, CASE WHEN (SELECT COUNT(*) FROM MK_BLOG WHERE BLOG_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN FN_GETCODENM('USE_YN', 'N', A.LANG_CD) 
+					ELSE FN_GETCODENM('USE_YN',A.USE_YN, A.LANG_CD)  END USE_YN_NM
+				FROM MK_MV_LIB A
+				INNER JOIN MK_BLOG AS D
+				ON A.LANG_CD = D.LANG_CD AND A.RELTD_LIB::INTEGER = D.BLOG_SEQ_NO AND A.MV_LIB_CCD = 'MVLIB_03'
+				WHERE 1=1
+				AND A.LANG_CD = #{langCd}
+				UNION ALL 
+				SELECT
+					  A.MV_LIB_SEQ_NO
+					, A.LANG_CD
+					, A.MV_LIB_CCD
+					, FN_GETCODENM('MVLIB_DIV', A.MV_LIB_CCD, A.LANG_CD) AS LIB_CCD1_NM
+					, E.RPT_CCD AS LIB_CCD2
+					, FN_GETCODENM('REPORT_DIV', RPT_CCD, A.LANG_CD) AS LIB_CCD2_NM
+					, E.TITLE_NM 
+					, E.PC_LIST_IMG_ALT
+					, A.RELTD_LIB
+					, A.USE_YN
+					, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+					, A.ORDB
+					, A.INS_PERSON_ID 
+					, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+					, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM 
+					, A.UPD_PERSON_ID
+					, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+					, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+					, CASE WHEN (SELECT COUNT(*) FROM MK_RPT WHERE RPT_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN 'N'
+					ELSE A.USE_YN END USE_YN
+					, CASE WHEN (SELECT COUNT(*) FROM MK_RPT WHERE RPT_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN FN_GETCODENM('USE_YN', 'N', A.LANG_CD) 
+					ELSE FN_GETCODENM('USE_YN',A.USE_YN, A.LANG_CD)  END USE_YN_NM
+				FROM MK_MV_LIB A
+				INNER JOIN MK_RPT AS E
+				ON A.LANG_CD = E.LANG_CD AND A.RELTD_LIB::INTEGER = E.RPT_SEQ_NO AND A.MV_LIB_CCD = 'MVLIB_04'
+				WHERE 1=1
+				AND A.LANG_CD = #{langCd}
+			) A WHERE 1=1   and MV_LIB_CCD  in ('MVLIB_03','MVLIB_04')
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+			AND A.MV_LIB_CCD = #{searchType}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType2) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType2)">
+			AND A.LIB_CCD2 = #{searchType2}
+		</if>		
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND  A.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if> 
+	ORDER BY A.MV_LIB_SEQ_NO DESC
+	</select>
+	
+	<insert id="doWrite" parameterType="com.cellosquare.adminapp.admin.mainviewlibrary.vo.AdminMainViewLibraryVO">
+		INSERT INTO MK_MV_LIB (
+			  LANG_CD
+			, MV_LIB_CCD
+			, RELTD_LIB
+			, INS_PERSON_ID
+			, INS_DTM
+			, UPD_PERSON_ID
+			, UPD_DTM
+			, USE_YN
+		) VALUES (
+			  #{langCd}
+			, #{mvLibCcd}
+			, #{reltdLib}
+			, #{insPersonId}
+			, NOW()
+			, #{updPersonId}
+			, NOW()
+			, #{useYn}
+		)
+	</insert>
+	
+	<select id="getDetail" parameterType="com.cellosquare.adminapp.admin.mainviewlibrary.vo.AdminMainViewLibraryVO" resultType="com.cellosquare.adminapp.admin.mainviewlibrary.vo.AdminMainViewLibraryVO">
+		 SELECT
+			  A.MV_LIB_SEQ_NO
+			, A.LANG_CD
+			, A.MV_LIB_CCD
+			, FN_GETCODENM('MVLIB_DIV', A.MV_LIB_CCD, A.LANG_CD) AS LIB_CCD1_NM
+			, A.RELTD_LIB
+			, A.USE_YN
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+			, A.ORDB
+			, A.INS_PERSON_ID 
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM 
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+			, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, CASE WHEN A.MV_LIB_CCD ='MVLIB_01' THEN (SELECT TITLE_NM FROM MK_EVT WHERE EVT_SEQ_NO = A.RELTD_LIB::INTEGER)
+			WHEN A.MV_LIB_CCD = 'MVLIB_02' THEN (SELECT TITLE_NM FROM MK_CELLO_NEWS WHERE NEWS_SEQ_NO = A.RELTD_LIB::INTEGER)
+			WHEN A.MV_LIB_CCD = 'MVLIB_03' THEN (SELECT TITLE_NM FROM MK_BLOG WHERE BLOG_SEQ_NO = A.RELTD_LIB::INTEGER)
+			WHEN A.MV_LIB_CCD = 'MVLIB_04' THEN (SELECT TITLE_NM FROM MK_RPT WHERE RPT_SEQ_NO = A.RELTD_LIB::INTEGER)
+				END TITLE_NM
+			, CASE WHEN A.MV_LIB_CCD ='MVLIB_01' THEN (SELECT MOBILE_LIST_IMG_PATH AS PC_LIST_IMG_PATH FROM MK_EVT WHERE EVT_SEQ_NO = A.RELTD_LIB::INTEGER)
+			WHEN A.MV_LIB_CCD = 'MVLIB_02' THEN (SELECT PC_LIST_IMG_PATH FROM MK_CELLO_NEWS WHERE NEWS_SEQ_NO = A.RELTD_LIB::INTEGER)
+			WHEN A.MV_LIB_CCD = 'MVLIB_03' THEN (SELECT PC_LIST_IMG_PATH FROM MK_BLOG WHERE BLOG_SEQ_NO = A.RELTD_LIB::INTEGER)
+			WHEN A.MV_LIB_CCD = 'MVLIB_04' THEN (SELECT PC_LIST_IMG_PATH FROM MK_RPT WHERE RPT_SEQ_NO = A.RELTD_LIB::INTEGER)
+				 END PC_LIST_IMG_PATH
+			, CASE WHEN A.MV_LIB_CCD ='MVLIB_01' THEN (SELECT MOBILE_LIST_IMG_FILE_NM AS PC_LIST_IMG_FILE_NM FROM MK_EVT WHERE EVT_SEQ_NO = A.RELTD_LIB::INTEGER)
+			WHEN A.MV_LIB_CCD = 'MVLIB_02' THEN (SELECT PC_LIST_IMG_FILE_NM FROM MK_CELLO_NEWS WHERE NEWS_SEQ_NO = A.RELTD_LIB::INTEGER)
+			WHEN A.MV_LIB_CCD = 'MVLIB_03' THEN (SELECT PC_LIST_IMG_FILE_NM FROM MK_BLOG WHERE BLOG_SEQ_NO = A.RELTD_LIB::INTEGER)
+			WHEN A.MV_LIB_CCD = 'MVLIB_04' THEN (SELECT PC_LIST_IMG_FILE_NM FROM MK_RPT WHERE RPT_SEQ_NO = A.RELTD_LIB::INTEGER)
+				 END PC_LIST_IMG_FILE_NM
+			, CASE WHEN A.MV_LIB_CCD ='MVLIB_01' THEN (SELECT MOBILE_LIST_IMG_ORG_FILE_NM AS PC_LIST_IMG_ORG_FILE_NM FROM MK_EVT WHERE EVT_SEQ_NO = A.RELTD_LIB::INTEGER)
+			WHEN A.MV_LIB_CCD = 'MVLIB_02' THEN (SELECT PC_LIST_IMG_ORG_FILE_NM FROM MK_CELLO_NEWS WHERE NEWS_SEQ_NO = A.RELTD_LIB::INTEGER)
+			WHEN A.MV_LIB_CCD = 'MVLIB_03' THEN (SELECT PC_LIST_IMG_ORG_FILE_NM FROM MK_BLOG WHERE BLOG_SEQ_NO = A.RELTD_LIB::INTEGER)
+			WHEN A.MV_LIB_CCD = 'MVLIB_04' THEN (SELECT PC_LIST_IMG_ORG_FILE_NM FROM MK_RPT WHERE RPT_SEQ_NO = A.RELTD_LIB::INTEGER)
+				 END PC_LIST_IMG_ORG_FILE_NM
+			, CASE WHEN (SELECT COUNT(*) FROM MK_EVT WHERE EVT_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN 'N'
+				ELSE A.USE_YN END USE_YN
+			, CASE WHEN (SELECT COUNT(*) FROM MK_EVT WHERE EVT_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN FN_GETCODENM('USE_YN', 'N', A.LANG_CD) 
+				ELSE FN_GETCODENM('USE_YN',A.USE_YN, A.LANG_CD)  
+				END USE_YN_NM
+			, CASE WHEN (SELECT COUNT(*) FROM MK_CELLO_NEWS WHERE NEWS_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN 'N'
+				ELSE A.USE_YN END USE_YN
+			, CASE WHEN (SELECT COUNT(*) FROM MK_CELLO_NEWS WHERE NEWS_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN FN_GETCODENM('USE_YN', 'N', A.LANG_CD) 
+				ELSE FN_GETCODENM('USE_YN',A.USE_YN, A.LANG_CD)  
+				END USE_YN_NM
+			, CASE WHEN (SELECT COUNT(*) FROM MK_BLOG WHERE BLOG_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN 'N'
+				ELSE A.USE_YN END USE_YN
+			, CASE WHEN (SELECT COUNT(*) FROM MK_BLOG WHERE BLOG_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN FN_GETCODENM('USE_YN', 'N', A.LANG_CD) 
+				ELSE FN_GETCODENM('USE_YN',A.USE_YN, A.LANG_CD)  
+				END USE_YN_NM				 
+			, CASE WHEN (SELECT COUNT(*) FROM MK_RPT WHERE RPT_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN 'N'
+				ELSE A.USE_YN END USE_YN
+			, CASE WHEN (SELECT COUNT(*) FROM MK_RPT WHERE RPT_SEQ_NO = A.RELTD_LIB::integer AND USE_YN='Y') = 0 THEN FN_GETCODENM('USE_YN', 'N', A.LANG_CD) 
+				ELSE FN_GETCODENM('USE_YN',A.USE_YN, A.LANG_CD)  
+				END USE_YN_NM	 
+		FROM MK_MV_LIB A
+		WHERE 1=1
+		AND A.MV_LIB_SEQ_NO = #{mvLibSeqNo}::integer
+	 </select>
+	 
+	 <update id="doUpdate" parameterType="com.cellosquare.adminapp.admin.mainviewlibrary.vo.AdminMainViewLibraryVO">
+		UPDATE MK_MV_LIB SET
+			  MV_LIB_CCD           				= #{mvLibCcd}
+			, RELTD_LIB            				= #{reltdLib}
+			, USE_YN 							= #{useYn} 
+			, UPD_DTM 							= NOW()
+			, UPD_PERSON_ID 					= #{updPersonId}
+		WHERE MV_LIB_SEQ_NO = #{mvLibSeqNo}::integer
+	</update>
+	
+	<delete id="doDelete" parameterType="com.cellosquare.adminapp.admin.mainviewlibrary.vo.AdminMainViewLibraryVO">
+	DELETE FROM MK_MV_LIB
+	WHERE MV_LIB_SEQ_NO = #{mvLibSeqNo}::integer
+	</delete>
+	
+	<update id="doSortOrder" parameterType="com.cellosquare.adminapp.admin.mainviewlibrary.vo.AdminMainViewLibraryVO">
+		UPDATE MK_MV_LIB SET
+			ORDB = #{ordb}
+		WHERE MV_LIB_SEQ_NO = #{mvLibSeqNo}::integer
+	</update>
+	
+	<!-- popup total count  -->
+	<select id="libraryTotalCount" parameterType="com.cellosquare.adminapp.admin.mainviewlibrary.vo.AdminMainViewLibraryVO" resultType="int">
+		SELECT 
+		 	 COUNT(A.*) AS COUNT
+		FROM (
+			SELECT EVT_SEQ_NO AS RELTD_LIB, TITLE_NM, EVT_CCD AS LIBCCD2, 'MVLIB_01' AS MV_LIB_CCD, INS_DTM, USE_YN FROM MK_EVT WHERE LANG_CD = #{langCd} AND USE_YN = 'Y'
+			UNION ALL 
+			SELECT NEWS_SEQ_NO AS RELTD_LIB, TITLE_NM, NEWS_CCD1 AS LIBCCD2, 'MVLIB_02' AS MV_LIB_CCD, INS_DTM, USE_YN FROM MK_CELLO_NEWS WHERE LANG_CD = #{langCd} AND USE_YN = 'Y'
+			UNION ALL
+			SELECT BLOG_SEQ_NO AS RELTD_LIB, TITLE_NM, BLOG_CCD1 AS LIBCCD2, 'MVLIB_03' AS MV_LIB_CCD, INS_DTM, USE_YN FROM MK_BLOG WHERE LANG_CD = #{langCd} AND USE_YN = 'Y'
+			UNION ALL
+			SELECT RPT_SEQ_NO AS RELTD_LIB, TITLE_NM, RPT_CCD AS LIBCCD2, 'MVLIB_04' AS MV_LIB_CCD, INS_DTM, USE_YN FROM MK_RPT WHERE LANG_CD = #{langCd} AND USE_YN = 'Y'
+		) A WHERE 1=1 AND USE_YN = 'Y'  and MV_LIB_CCD  in ('MVLIB_03','MVLIB_04')
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+			AND A.MV_LIB_CCD = #{searchType}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND A.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+	</select>
+	
+	<!-- popup list  -->
+	<select id="librarySearch" parameterType="com.cellosquare.adminapp.admin.mainviewlibrary.vo.AdminMainViewLibraryVO" resultType="com.cellosquare.adminapp.admin.mainviewlibrary.vo.AdminMainViewLibraryVO">
+		SELECT 
+		 	  A.* 
+		FROM (
+			SELECT 
+				EVT_SEQ_NO AS RELTD_LIB, TITLE_NM
+				, EVT_CCD AS LIBCCD2
+				, FN_GETCODENM('EVT_DIV', EVT_CCD, LANG_CD) AS LIBCCD2_NM
+				, 'MVLIB_01' AS MV_LIB_CCD
+				, FN_GETCODENM('MVLIB_DIV', 'MVLIB_01', LANG_CD) AS LIB_CCD1_NM
+				, INS_DTM
+				, USE_YN
+				, FN_GETCODENM('USE_YN', USE_YN, LANG_CD) AS USE_YN_NM
+			FROM MK_EVT WHERE 1=1 
+			AND LANG_CD = #{langCd}
+			AND USE_YN = 'Y'
+			AND EVT_SEQ_NO NOT IN (SELECT RELTD_LIB::INTEGER FROM MK_MV_LIB WHERE MV_LIB_CCD = 'MVLIB_01')
+			UNION ALL 
+			SELECT 
+				NEWS_SEQ_NO AS RELTD_LIB, TITLE_NM
+				, NEWS_CCD1 AS LIBCCD2
+				, FN_GETCODENM('CELLO_NEWS', NEWS_CCD1, LANG_CD) AS LIBCCD2_NM
+				, 'MVLIB_02' AS MV_LIB_CCD
+				, FN_GETCODENM('MVLIB_DIV', 'MVLIB_02', LANG_CD) AS LIB_CCD1_NM
+				, INS_DTM
+				, USE_YN
+				, FN_GETCODENM('USE_YN', USE_YN, LANG_CD) AS USE_YN_NM				 
+			FROM MK_CELLO_NEWS WHERE 1=1
+			AND LANG_CD = #{langCd}
+			AND USE_YN = 'Y'
+			AND NEWS_SEQ_NO NOT IN (SELECT RELTD_LIB::INTEGER FROM MK_MV_LIB WHERE MV_LIB_CCD = 'MVLIB_02')
+			UNION ALL
+			SELECT 
+				BLOG_SEQ_NO AS RELTD_LIB, TITLE_NM
+				, BLOG_CCD1 AS LIBCCD2
+				, FN_GETCODENM('BLOG_DIV', BLOG_CCD1, LANG_CD) AS LIBCCD2_NM
+				, 'MVLIB_03' AS MV_LIB_CCD
+				, FN_GETCODENM('MVLIB_DIV', 'MVLIB_03', LANG_CD) AS LIB_CCD1_NM
+				, INS_DTM 
+				, USE_YN
+				, FN_GETCODENM('USE_YN', USE_YN, LANG_CD) AS USE_YN_NM
+			FROM MK_BLOG WHERE 1=1
+			AND LANG_CD = #{langCd}
+			AND USE_YN = 'Y'
+			AND BLOG_SEQ_NO NOT IN (SELECT RELTD_LIB::INTEGER FROM MK_MV_LIB WHERE MV_LIB_CCD = 'MVLIB_03')
+			UNION ALL
+			SELECT 
+				RPT_SEQ_NO AS RELTD_LIB, TITLE_NM
+				, RPT_CCD AS LIBCCD2
+				, FN_GETCODENM('REPORT_DIV', RPT_CCD, LANG_CD) AS LIBCCD2_NM
+				, 'MVLIB_04' AS MV_LIB_CCD
+				, FN_GETCODENM('MVLIB_DIV', 'MVLIB_04', LANG_CD) AS LIB_CCD1_NM
+				, INS_DTM
+				, USE_YN
+				, FN_GETCODENM('USE_YN', USE_YN, LANG_CD) AS USE_YN_NM				 
+			FROM MK_RPT WHERE 1=1
+			AND LANG_CD = #{langCd}
+			AND USE_YN = 'Y'
+			AND RPT_SEQ_NO NOT IN (SELECT RELTD_LIB::INTEGER FROM MK_MV_LIB WHERE MV_LIB_CCD = 'MVLIB_04')
+		) A WHERE 1=1 AND USE_YN = 'Y' and MV_LIB_CCD  in ('MVLIB_03','MVLIB_04')
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+			AND A.MV_LIB_CCD = #{searchType}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND  A.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+		ORDER BY INS_DTM DESC
+	</select>
+	
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.login.mapper.AdminLoginMapper">
+	<select id="getLogin" parameterType="com.cellosquare.adminapp.admin.login.vo.AdminLoginVO" resultType="com.cellosquare.adminapp.admin.manager.vo.AdminManagerVO">
+		SELECT 
+			ADM_MNG_SEQ_NO
+			, ADM_USER_ID
+			, ADM_USER_NM
+			, ADM_EMAIL_ADDR
+			, ADM_AUTH
+			, ADM_PW
+			, SALT_VAL
+			, TEMP_PW_STS
+			, USE_YN
+			, TO_CHAR(INS_DTM, 'YYYY-MM-DD HH:MI') AS INS_DTM
+			, INS_PERSON_ID
+			, TO_CHAR(UPD_DTM, 'YYYY-MM-DD HH:MI') AS UPD_DTM
+			, UPD_PERSON_ID
+			, LOGIN_CNT
+		FROM MK_ADM_MNG
+		WHERE ADM_USER_ID = #{adminId}
+		AND USE_YN='Y'
+	</select>
+	
+	<!-- 마지막 접속일 업데이트 -->
+	<update id="updateLastLoginDt" parameterType="com.cellosquare.adminapp.admin.login.vo.AdminLoginVO">
+		UPDATE MK_ADM_MNG
+		SET
+			LOGIN_CNT = 0
+			, FINAL_LOG_DTM = NOW()
+		WHERE ADM_MNG_SEQ_NO = #{admMngSeqNo}::integer
+	</update>
+	
+	<!-- 비밀번호 변경 -->
+	<update id="updatePassword" parameterType="com.cellosquare.adminapp.admin.login.vo.AdminLoginVO">
+		UPDATE MK_ADM_MNG
+		SET
+			TEMP_PW_STS = #{tempPwSts},
+			<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(passwordEncpt) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(passwordEncpt)">
+			 ADM_PW = #{admPw},
+			 SALT_VAL = #{saltVal},
+			</if>
+			UPD_PERSON_ID = #{updPersonId},
+			UPD_DTM = NOW()
+		WHERE ADM_USER_ID = #{adminId}
+	</update>
+	
+	<update id="updateLoginFailCnt" parameterType="com.cellosquare.adminapp.admin.login.vo.AdminLoginVO">
+		UPDATE MK_ADM_MNG
+		SET
+			LOGIN_CNT = LOGIN_CNT + 1
+		WHERE ADM_USER_ID = #{adminId}
+	</update>
+</mapper>
