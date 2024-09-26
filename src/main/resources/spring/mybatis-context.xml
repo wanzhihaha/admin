@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+    xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd
+                        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+                        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+                        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<!-- cello package BEGIN -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.cellosquare.adminapp" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.bluewaves.lab" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+    </bean>
+    <!-- cello package END -->
+
+    <!-- celloDS BEGIN -->
+    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="CELLOSQUAREDB-CSM" />
+        <property name="resourceRef" value="true" />
+    </bean>
+    <!-- celloDS END -->
+
+<!--	<bean id="dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">-->
+<!--		<constructor-arg ref="dataSourceSpied"/>-->
+<!--		<property name="logFormatter">-->
+<!--			<bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">-->
+<!--				<property name="loggingType" value="MULTI_LINE"/>-->
+<!--				<property name="sqlPrefix" value="SQL : "/>-->
+<!--			</bean>-->
+<!--		</property>-->
+<!--	</bean>-->
+
+    <!-- celloDS sqlSessionFactory BEGIN -->
+    <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="mapperLocations" value="classpath*:com/cellosquare/adminapp/**/mapper/*.xml,classpath*:com/bluewaves/lab/**/mapper/*.xml" />
+		<property name="globalConfig" ref="globalConfig" />
+	</bean>
+	<bean class="com.cellosquare.adminapp.common.config.MyMetaObjectHandler" id="myMetaObjectHandler"/>
+	<bean id="globalConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig">
+		<property name="metaObjectHandler" ref="myMetaObjectHandler"/>
+	</bean>
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+    <!-- celloDS sqlSessionFactory END -->
+
+    <!-- celloDS transactionManager BEGIN -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="delete*" rollback-for="java.lang.Exception" />
+			<tx:method name="update*" rollback-for="java.lang.Exception" />
+			<tx:method name="regist*" rollback-for="java.lang.Exception" />
+			<tx:method name="save*" rollback-for="java.lang.Exception" />
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="transactionPointcut" expression="execution (public * com.cellosquare.adminapp..*Service.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="transactionPointcut" />
+	</aop:config>
+
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="transactionPointcutForLabBluewaves" expression="execution (public * com.bluewaves.lab..*Service.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="transactionPointcutForLabBluewaves" />
+	</aop:config>
+    <!-- celloDS transactionManager END -->
+
+</beans>

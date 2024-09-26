@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dexter-paging>
+
+	<event-script javascript="fncPage"/>
+
+	<begin-HTML>
+		<prefix-HTML>
+			<prefix-start-HTML>
+				<![CDATA[					
+				]]>
+			</prefix-start-HTML>
+			<prefix-end-HTML>
+				<![CDATA[
+				]]>
+			</prefix-end-HTML>
+		</prefix-HTML>
+		<start-HTML event="href">
+			<![CDATA[<a ${event} class="prev10" title="首页">&lt;&lt;</a> ]]>
+		</start-HTML>
+		<prev-HTML event="href">
+			<![CDATA[<a ${event} class="prev" title="上一页">&lt;</a> ]]>
+		</prev-HTML>
+	</begin-HTML>
+	
+	<number-HTML>
+		<prefix-HTML>
+			<prefix-start-HTML>
+				<![CDATA[
+					
+				]]>
+			</prefix-start-HTML>
+			<prefix-end-HTML>
+				<![CDATA[
+					
+				]]>
+			</prefix-end-HTML>
+		</prefix-HTML>
+		<selected-HTML event="href">
+			<![CDATA[<a class="current" title="${page}">${page}</a> ]]>
+		</selected-HTML>
+		<other-HTML event="href">
+			<![CDATA[<a ${event} title="${page}">${page}</a>]]>
+		</other-HTML>
+	</number-HTML>
+	
+	<last-HTML>
+		<prefix-HTML>
+			<prefix-start-HTML>
+				<![CDATA[
+				]]>
+			</prefix-start-HTML>
+			<prefix-end-HTML>
+				<![CDATA[
+						
+				]]>
+			</prefix-end-HTML>
+		</prefix-HTML>
+		<next-HTML event="href">
+			<![CDATA[<a ${event} class="next" title="下一页">&gt;</a> ]]>
+		</next-HTML>
+		<end-HTML event="href">
+			<![CDATA[<a ${event} class="next10" title="尾页">&gt;&gt;</a> ]]>
+		</end-HTML>
+	</last-HTML>
+	
+</dexter-paging>

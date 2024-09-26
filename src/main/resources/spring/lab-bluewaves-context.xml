@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- 프로퍼티 매니저 -->
+	<bean id="blabXmlPropertyManager" class="com.bluewaves.lab.property.XmlPropertyFactory">
+		<property name="propertyXmlPath" value="classpath:lab_bluewaves/properties/system-config.xml" />
+	</bean>
+	
+	<!-- 메시지 매니저 -->
+	<bean id="blabXmlMessageManager" class="com.bluewaves.lab.message.XmlMessageFactory">
+		<property name="messageXmlPath" value="classpath:lab_bluewaves/message/application-message.xml" />
+		<property name="nullExpression" value="true" />
+	</bean>
+	
+	<!-- 벨리데이션 -->
+ 	<bean id="blabValidatorManager" class="com.bluewaves.lab.validator.ValidatorFactory">
+		<property name="defaultMessageKey" value="valid.history.back" />
+	</bean>
+	
+	<!-- 페이징 -->
+	<bean id="blabPaging" class="com.bluewaves.lab.paging.PagingFactory">
+		<property name="pagingInfoMap">
+			<map>
+				<!--
+				<entry key="home" value-ref="homePagingInfo" />
+				-->
+				<entry key="admin" value-ref="adminPagingInfo" />
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="adminPagingInfo" class="com.bluewaves.lab.paging.PagingInfoBean">
+		<property name="xmlPath" value="classpath:lab_bluewaves/paging/paging-admin.xml" />
+		<property name="rowSize" value="20" />
+		<property name="pageSize" value="10" />
+	</bean>
+	
+</beans>

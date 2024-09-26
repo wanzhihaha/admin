@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<!-- 타일즈 레이아웃 관련 설정 파일 xml -->
+<tiles-definitions>
+
+    <!-- 관리자 기본 레이아웃 정의  -->
+    <definition name="layout_admin_basic" template="/WEB-INF/jsp/common/layout/admin/template-admin.jsp" >
+		<put-attribute name="title" value="" />
+		<put-attribute name="header" value="/WEB-INF/jsp/common/layout/admin/common-header.jsp" />
+		<put-attribute name="leftmenu" value="/WEB-INF/jsp/common/layout/admin/common-leftmenu.jsp" />
+		<put-attribute name="body" value="" />
+		<put-attribute name="footer" value="/WEB-INF/jsp/common/layout/admin/common-footer.jsp" />
+	</definition>
+	
+	<!-- 관리자 팝업 레이아웃 정의 -->
+	<definition name="layout_admin_popup" template="/WEB-INF/jsp/common/layout/admin/template-admin-popup.jsp" >
+		<put-attribute name="body" value="" />
+	</definition>
+	
+	<definition name="layout_admin_full" template="/WEB-INF/jsp/common/layout/admin/template-admin-full.jsp" >
+		<put-attribute name="body" value="" />
+	</definition>
+    
+    
+    <!-- 관리자 기본 레이아웃 패턴 -->
+    <definition name="admin/basic/*/*" extends="layout_admin_basic">
+        <put-attribute name="body" expression="/WEB-INF/jsp/admin/basic/{1}/{2}.jsp" />
+    </definition>
+    
+    <definition name="admin/popup/*/*" extends="layout_admin_popup">
+        <put-attribute name="body" expression="/WEB-INF/jsp/admin/basic/{1}/{2}.jsp" />
+    </definition>
+    
+    <definition name="admin/full/*/*" extends="layout_admin_full">
+        <put-attribute name="body" expression="/WEB-INF/jsp/admin/full/{1}/{2}.jsp" />
+    </definition>
+</tiles-definitions>

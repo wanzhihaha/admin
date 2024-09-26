@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"> 
+<properties>
+ 
+	<comment>Bluewaves Lab, Message</comment> 
+
+	<!-- 이곳에 Key 와 Value 를 추가합니다. -->
+	<entry key="sampleKey"><![CDATA[sampleValue]]></entry>
+	
+	<!-- 공통문구 -->
+	<entry key="message.common.write.success"><![CDATA[保存成功.]]></entry>
+	<entry key="message.common.write.fail"><![CDATA[新增失败，请重试.]]></entry>
+	<entry key="message.common.modify.success"><![CDATA[修改成功.]]></entry>
+	<entry key="message.common.modify.fail"><![CDATA[修改失败，请重试.]]></entry>
+	<entry key="message.common.delete.success"><![CDATA[删除成功.]]></entry>
+	<entry key="message.common.delete.fail"><![CDATA[删除失败，请重试.]]></entry>
+	<entry key="message.common.reply.success"><![CDATA[Answer is complete.]]></entry>
+	<entry key="message.common.reply.fail"><![CDATA[Failed to reply. Please try later.]]></entry>
+	<entry key="message.common.eamilSend.success"><![CDATA[Mail has been sent. Please check your registered email.]]></entry>
+	<entry key="message.common.eamilSend.fail"><![CDATA[Failed to send mail. Please try later.]]></entry>
+	
+	<!-- 파일업로드 실패 문구 -->
+	<entry key="comm.file.upload.denied.extension"><![CDATA[This file cannot be uploaded.]]></entry>
+	<entry key="comm.file.upload.denied"><![CDATA[This file cannot be uploaded.]]></entry>
+	
+	<!-- 로그인 -->
+	<entry key="message.login.pw.fail"><![CDATA[账号或密码有误，请重新输入。区分大小写.]]></entry>
+	<entry key="message.login.auth"><![CDATA[登录过期，请重新登录.]]></entry>
+	<entry key="message.logout"><![CDATA[账号已退出.]]></entry>
+	<entry key="message.not.auth"><![CDATA[您的权限不足.]]></entry>
+	<entry key="message.login.id.dup"><![CDATA[ID已存在，请重新输入.]]></entry>
+	<entry key="message.login.fail.cnt"><![CDATA[密码错误的次数已超过5次。 请联系管理员重置.]]></entry>
+	
+	
+	
+
+
+
+</properties>

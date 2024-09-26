@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"> 
+<properties>
+ 
+	<comment>Bluewaves Lab, Properties</comment> 
+	<!-- SEED-CBC 암복호화에 사용할 128비트 초기값(IV)과 128비트 비밀키값(MK)이 저장된 파일 dev-->
+	<entry key="encryptKeyPath"><![CDATA[/DATA/KEY/WEB-INF/encryptKey/key.dat]]></entry> <!-- 운영서버 -->
+	<entry key="encryptKeyPath:192.168.122.1"><![CDATA[/home/cello/admin/www/WEB-INF/encryptKey/key.dat]]></entry><!-- 블루개발 -->
+	<entry key="encryptKeyPath:172.30.248.105"><![CDATA[D:\eclipse\workspace_blue\cellosquare-admin\src\main\webapp\WEB-INF\encryptKey\key.dat]]></entry>
+	
+
+	<entry key="system.admin.path"><![CDATA[/celloSquareAdmin]]></entry>
+	<!-- 관리자 로그인 path -->
+	<entry key="system.admin.login.url"><![CDATA[/celloSquareAdmin/login/loginForm.do]]></entry>
+	<!-- 로그인후 첫페이지 -->
+	<entry key="system.admin.frist.url"><![CDATA[/celloSquareAdmin/products/list.do]]></entry>
+
+	
+	
+	
+	<!-- 파일 이미지 허용 확장자 (콤마,로 구분) -->
+	<entry key="allowImageExtensions"><![CDATA[jpg, png, bmp, gif, jpeg]]></entry>
+	<entry key="allowImageMimeTypes"><![CDATA[image/gif, image/jpeg, image/x-png, image/png, image/bmp]]></entry>
+	<!-- 파일 이미지 최대 사이즈 -->
+	<entry key="uploadImageMaxSize"><![CDATA[5242880]]></entry>
+	
+	
+	<!-- 파일 허용 확장자 (콤마,로 구분) -->
+	<entry key="allowFileExtensions"><![CDATA[jpg, png, bmp, gif, jpeg, doc, docx, xls, xlsx, ppt, pptx, wmv, mp4, pdf]]></entry>
+	<!-- 파일 허용 MINE TYPE (콤마,로 구분) -->
+	<entry key="allowFileMimeTypes"><![CDATA[image/gif, image/jpeg, image/x-png, image/png, image/bmp, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, 
+				application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, 
+				application/x-msexcel, application/x-mspowerpoint, application/x-mspowerpoint, video/x-ms-wmv, video/mp4, application/pdf ]]></entry>
+	<!-- 파일 최대 사이즈 -->
+	<entry key="uploadFileMaxSize"><![CDATA[10485760]]></entry>
+	
+	<!-- 파일 업로드에 오늘 날짜 디렉토리를 포함하는 여부 -->
+	<entry key="todayMakePathYN"><![CDATA[Y]]></entry>
+	
+	<!-- 파일 이미지 경로 -->
+	<!-- 상품 -->
+	<entry key="uploadFilePathGoods"><![CDATA[/DATA/UPLOAD/goods]]></entry>
+	<entry key="uploadFilePathGoods:192.168.122.1"><![CDATA[/home/cello/upload/goods]]></entry>
+	<!-- 이벤트 -->
+	<entry key="uploadFilePathEvent"><![CDATA[/DATA/UPLOAD/event]]></entry>
+	<entry key="uploadFilePathEvent:192.168.122.1"><![CDATA[/home/cello/upload/event]]></entry>
+	<!-- 첼로소식 -->
+	<entry key="uploadFilePathNews"><![CDATA[/DATA/UPLOAD/news]]></entry>
+	<entry key="uploadFilePathNews:192.168.122.1"><![CDATA[/home/cello/upload/news]]></entry>
+	<!-- 블로그 -->
+	<entry key="uploadFilePathBlog"><![CDATA[/DATA/UPLOAD/blog]]></entry>
+	<entry key="uploadFilePathBlog:192.168.122.1"><![CDATA[/home/cello/upload/blog]]></entry>
+	<!-- report -->
+	<entry key="uploadFilePathreport"><![CDATA[/DATA/UPLOAD/report]]></entry>
+	<entry key="uploadFilePathreport:192.168.122.1"><![CDATA[/home/cello/upload/report]]></entry>
+	<!-- 동영상 -->
+	<entry key="uploadFilePathMovie"><![CDATA[/DATA/UPLOAD/movie]]></entry>
+	<entry key="uploadFilePathMovie:192.168.122.1"><![CDATA[/home/cello/upload/movie]]></entry>
+	<!-- 팝업 -->
+	<entry key="uploadFilePathPopup"><![CDATA[/DATA/UPLOAD/popup]]></entry>
+	<entry key="uploadFilePathPopup:192.168.122.1"><![CDATA[/home/cello/upload/popup]]></entry>
+	<!-- 배너 -->
+	<entry key="uploadFilePathBanner"><![CDATA[/DATA/UPLOAD/banner]]></entry>
+	<entry key="uploadFilePathBanner:192.168.122.1"><![CDATA[/home/cello/upload/banner]]></entry>
+	<!-- meta -->
+	<entry key="uploadFilePathMeta"><![CDATA[/DATA/UPLOAD/meta]]></entry>
+	<entry key="uploadFilePathMeta:192.168.122.1"><![CDATA[/home/cello/upload/meta]]></entry>
+	<!-- Main View Video -->
+	<entry key="uploadFilePathMvVideo"><![CDATA[/DATA/UPLOAD/mvvideo]]></entry>
+	<entry key="uploadFilePathMvVideo:192.168.122.1"><![CDATA[/home/cello/upload/mvvideo]]></entry>
+	<!-- Library Sub Main Event View -->
+	<entry key="uploadFilePathMvLib"><![CDATA[/DATA/UPLOAD/mvevent]]></entry>
+	<entry key="uploadFilePathMvLib:192.168.122.1"><![CDATA[/home/cello/upload/mvevent]]></entry>
+
+	<entry key="uploadFilePathCountry"><![CDATA[/DATA/UPLOAD/country]]></entry>
+	
+	<!-- namo -->
+	<entry key="uploadFilePathNamo"><![CDATA[/DATA/UPLOAD/namoupload]]></entry>
+	<entry key="uploadFilePathNamo:192.168.122.1"><![CDATA[/home/cello/upload/namoupload]]></entry>
+	
+	
+	
+	
+	
+	<!-- mailserver -->
+	<entry key="mail.smtp.host"><![CDATA[smtp.gmail.com]]></entry>
+	<entry key="mail.smtp.port"><![CDATA[465]]></entry>
+	<entry key="mail.smtp.username"><![CDATA[test@gmail.com]]></entry>
+	<entry key="mail.smtp.senderEmail"><![CDATA[test@gmail.com]]></entry>
+	<entry key="mail.smtp.userpw"><![CDATA[1111]]></entry>
+
+	<!-- openapi -->
+	<!-- 견적조회 open api -->
+	<entry key="openapi.route.url"><![CDATA[https://dev.openapi.cellosquare.cn/v1/tariff/route-list]]></entry><!-- 개발 -->
+	<!-- 견적조회 x-api-key -->
+	<entry key="openapi.quote.key"><![CDATA[FABBB0EF9E757ED6495D45A1F9B3669888981D11A203AA3235F42030BF8CDAF555CEEB7C90C44CED677704600EFBB3DF]]></entry><!-- 개발 -->
+
+
+
+	<entry key="aws.profiles"><![CDATA[dev]]></entry>
+	<entry key="celloSquare.website.prefix"><![CDATA[https://dev.cellosquare.cn]]></entry>
+	<entry key="MKT_S3Bucket"><![CDATA[dev-marketing-portal-materials]]></entry>
+	<entry key="S3_URL"><![CDATA[https://dev-materials.cellosquare.cn]]></entry>
+</properties>
