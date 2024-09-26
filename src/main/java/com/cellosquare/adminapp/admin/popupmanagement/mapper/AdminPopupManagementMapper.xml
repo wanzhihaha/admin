@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.popupmanagement.mapper.AdminPopupManagementMapper">
+
+	<select id="getTotalCount" parameterType="com.cellosquare.adminapp.admin.popupmanagement.vo.AdminPopupManagementVO" resultType="int">
+		SELECT COUNT(*)
+		FROM MK_POP_MNG A
+		WHERE LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+			AND A.PC_POP_CCD = #{searchType}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND  A.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+	</select>
+
+	<select id="getList" parameterType="com.cellosquare.adminapp.admin.popupmanagement.vo.AdminPopupManagementVO" resultType="com.cellosquare.adminapp.admin.popupmanagement.vo.AdminPopupManagementVO">
+		SELECT
+			  A.POP_SEQ_NO
+			, A.TITLE_NM
+			, A.PC_POP_CCD
+			, FN_GETCODENM('POPUP_DIV', A.PC_POP_CCD, A.LANG_CD) AS PC_POP_CCD_NM
+			, TO_CHAR(TO_TIMESTAMP(PERID_STAT_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS PERID_STAT_DATE
+			, TO_CHAR(TO_TIMESTAMP(PERID_END_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS PERID_END_DATE
+			, A.LINK_URL
+			, A.PC_POP_SIZE_WDT
+			, A.PC_POP_SIZE_HGT
+			, A.PC_POP_LOC_TOP
+			, A.PC_POP_LOC_LEFT
+			, A.PC_POP_IMG_PATH
+			, A.PC_POP_IMG_ORG_FILE_NM
+			, A.PC_POP_IMG_FILE_NM
+			, A.PC_POP_IMG_SIZE::integer
+			, A.PC_POP_IMG_ALT
+			, A.MOBILE_POP_SIZE_WDT
+			, A.MOBILE_POP_SIZE_HGT
+			, A.MOBILE_POP_IMG_PATH 
+			, A.MOBILE_POP_IMG_ORG_FILE_NM
+			, A.MOBILE_POP_IMG_FILE_NM
+			, A.MOBILE_POP_IMG_SIZE 
+			, A.MOBILE_POP_IMG_ALT
+			, A.USE_YN
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+			, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+		FROM MK_POP_MNG A
+		WHERE LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchType) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchType)">
+			AND A.PC_POP_CCD = #{searchType}
+		</if>
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+			AND  A.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%')
+		</if>
+	ORDER BY A.POP_SEQ_NO DESC
+	LIMIT #{endRow} OFFSET #{startRow}
+	</select>
+
+	<insert id="doWrite" parameterType="com.cellosquare.adminapp.admin.popupmanagement.vo.AdminPopupManagementVO">
+	INSERT INTO MK_POP_MNG (
+		  PC_POP_CCD
+		, LANG_CD
+		, TITLE_NM
+		, PERID_STAT_DATE
+		, PERID_END_DATE
+		, LINK_URL
+		, PC_POP_SIZE_WDT
+		, PC_POP_SIZE_HGT
+		, PC_POP_LOC_TOP
+		, PC_POP_LOC_LEFT
+		, PC_POP_IMG_PATH
+		, PC_POP_IMG_ORG_FILE_NM
+		, PC_POP_IMG_FILE_NM
+		, PC_POP_IMG_SIZE
+		, PC_POP_IMG_ALT
+		, MOBILE_POP_SIZE_WDT
+		, MOBILE_POP_SIZE_HGT
+		, MOBILE_POP_IMG_PATH 
+		, MOBILE_POP_IMG_ORG_FILE_NM
+		, MOBILE_POP_IMG_FILE_NM
+		, MOBILE_POP_IMG_SIZE 
+		, MOBILE_POP_IMG_ALT
+		, INS_PERSON_ID
+		, INS_DTM
+		, UPD_PERSON_ID
+		, UPD_DTM
+		, USE_YN
+	) VALUES (
+		  #{pcPopCcd}
+		, #{langCd}
+		, #{titleNm}
+		, #{peridStatDate}
+		, #{peridEndDate}
+		, #{linkUrl}
+		, #{pcPopSizeWdt}
+		, #{pcPopSizeHgt}
+		, #{pcPopLocTop}
+		, #{pcPopLocLeft}
+		, #{pcPopImgPath}
+		, #{pcPopImgOrgFileNm}
+		, #{pcPopImgFileNm}
+		, #{pcPopImgSize}::integer
+		, #{pcPopImgAlt}
+		, #{mobilePopSizeWdt}
+		, #{mobilePopSizeHgt}
+		, #{mobilePopImgPath}
+		, #{mobilePopImgOrgFileNm}
+		, #{mobilePopImgFileNm}
+		, #{mobilePopImgSize}::integer
+		, #{mobilePopImgAlt}
+		, #{insPersonId}
+		, NOW()
+		, #{updPersonId}
+		, NOW()
+		, #{useYn}
+	)
+	</insert>
+	
+	<select id="getDetail" parameterType="com.cellosquare.adminapp.admin.popupmanagement.vo.AdminPopupManagementVO" resultType="com.cellosquare.adminapp.admin.popupmanagement.vo.AdminPopupManagementVO">
+		 SELECT
+		 	  A.POP_SEQ_NO
+		 	, A.PC_POP_CCD
+			, FN_GETCODENM('POPUP_DIV', A.PC_POP_CCD, A.LANG_CD) AS PC_POP_CCD_NM
+			, A.LANG_CD
+			, A.TITLE_NM
+			, TO_CHAR(TO_TIMESTAMP(PERID_STAT_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS PERID_STAT_DATE
+			, TO_CHAR(TO_TIMESTAMP(PERID_END_DATE, 'YYYYMMDD'), 'YYYY-MM-DD') AS PERID_END_DATE
+			, A.LINK_URL
+			, A.PC_POP_SIZE_WDT
+			, A.PC_POP_SIZE_HGT
+			, A.PC_POP_LOC_TOP
+			, A.PC_POP_LOC_LEFT
+			, A.PC_POP_IMG_PATH
+			, A.PC_POP_IMG_ORG_FILE_NM
+			, A.PC_POP_IMG_FILE_NM
+			, A.PC_POP_IMG_SIZE
+			, A.PC_POP_IMG_ALT
+			, A.MOBILE_POP_SIZE_WDT
+			, A.MOBILE_POP_SIZE_HGT
+			, A.MOBILE_POP_IMG_PATH 
+			, A.MOBILE_POP_IMG_ORG_FILE_NM
+			, A.MOBILE_POP_IMG_FILE_NM
+			, A.MOBILE_POP_IMG_SIZE 
+			, A.MOBILE_POP_IMG_ALT
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+			, TO_CHAR(UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.USE_YN
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+		FROM MK_POP_MNG A
+		WHERE 1=1
+		AND A.POP_SEQ_NO = #{popSeqNo}::integer
+	 </select>
+
+
+	<update id="doUpdate" parameterType="com.cellosquare.adminapp.admin.popupmanagement.vo.AdminPopupManagementVO">
+	UPDATE MK_POP_MNG 
+	SET
+		  TITLE_NM             				= #{titleNm}
+		, PC_POP_CCD         				= #{pcPopCcd}
+		, PERID_STAT_DATE		 			= #{peridStatDate}
+		, PERID_END_DATE		 			= #{peridEndDate}
+		, LINK_URL		 					= #{linkUrl}
+		, PC_POP_SIZE_WDT 	 				= #{pcPopSizeWdt}
+		, PC_POP_SIZE_HGT 					= #{pcPopSizeHgt}
+		, PC_POP_LOC_TOP 					= #{pcPopLocTop}
+		, PC_POP_LOC_LEFT 					= #{pcPopLocLeft}
+		, PC_POP_IMG_PATH 					= #{pcPopImgPath}
+		, PC_POP_IMG_ORG_FILE_NM 			= #{pcPopImgOrgFileNm}
+		, PC_POP_IMG_FILE_NM 				= #{pcPopImgFileNm}
+		, PC_POP_IMG_SIZE					= #{pcPopImgSize}::integer
+		, PC_POP_IMG_ALT 					= #{pcPopImgAlt}
+		, MOBILE_POP_SIZE_WDT 				= #{mobilePopSizeWdt}
+		, MOBILE_POP_SIZE_HGT 				= #{mobilePopSizeHgt}
+		, MOBILE_POP_IMG_PATH 				= #{mobilePopImgPath}
+		, MOBILE_POP_IMG_ORG_FILE_NM 		= #{mobilePopImgOrgFileNm}
+		, MOBILE_POP_IMG_FILE_NM 			= #{mobilePopImgFileNm}
+		, MOBILE_POP_IMG_SIZE				= #{mobilePopImgSize}::integer
+		, MOBILE_POP_IMG_ALT 				= #{mobilePopImgAlt}
+		, USE_YN 							= #{useYn} 
+		, UPD_DTM 							= NOW()
+		, UPD_PERSON_ID 					= #{updPersonId}
+	WHERE POP_SEQ_NO = #{popSeqNo}::integer
+	</update>
+
+	<delete id="doDelete" parameterType="com.cellosquare.adminapp.admin.popupmanagement.vo.AdminPopupManagementVO">
+	DELETE FROM MK_POP_MNG
+	WHERE POP_SEQ_NO = #{popSeqNo}::integer
+	</delete>
+
+</mapper>
