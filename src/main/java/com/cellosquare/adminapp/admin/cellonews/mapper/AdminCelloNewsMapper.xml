@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cellosquare.adminapp.admin.cellonews.mapper.AdminCelloNewsMapper">
+
+	<select id="getTotalCount" parameterType="com.cellosquare.adminapp.admin.cellonews.vo.AdminCelloNewsVO" resultType="int">
+		SELECT COUNT(*)
+		FROM MK_CELLO_NEWS
+		WHERE LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+				AND (TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%') OR NEWS_CCD2 ILIKE CONCAT ('%', #{searchValue}, '%'))
+		</if>
+	</select>
+	
+	<select id="getList" parameterType="com.cellosquare.adminapp.admin.cellonews.vo.AdminCelloNewsVO" resultType="com.cellosquare.adminapp.admin.cellonews.vo.AdminCelloNewsVO">
+		SELECT
+			  A.NEWS_SEQ_NO
+			, A.LANG_CD
+			, A.NEWS_CCD1
+			, FN_GETCODENM('CELLO_NEWS', A.NEWS_CCD1, A.LANG_CD) AS NEWS_CCD_NM
+			, A.NEWS_CCD2
+			, A.TITLE_NM
+			, A.SUMMARY_INFO
+			, A.PC_LIST_IMG_PATH
+			, A.PC_LIST_IMG_ORG_FILE_NM
+			, A.PC_LIST_IMG_FILE_NM
+			, A.PC_LIST_IMG_SIZE
+			, A.PC_LIST_IMG_ALT
+			, A.PC_DETL_IMG_PATH
+			, A.PC_DETL_IMG_ORG_FILE_NM
+			, A.PC_DETL_IMG_FILE_NM
+			, A.PC_DETL_IMG_SIZE
+			, A.PC_DETL_IMG_ALT
+			, A.MOBILE_LIST_IMG_PATH 
+			, A.MOBILE_LIST_IMG_ORG_FILE_NM
+			, A.MOBILE_LIST_IMG_FILE_NM
+			, A.MOBILE_LIST_IMG_SIZE 
+			, A.MOBILE_LIST_IMG_ALT
+			, A.MOBILE_DETL_IMG_PATH 
+			, A.MOBILE_DETL_IMG_ORG_FILE_NM
+			, A.MOBILE_DETL_IMG_FILE_NM
+			, A.MOBILE_DETL_IMG_SIZE 
+			, A.MOBILE_DETL_IMG_ALT
+			, A.NEWS_DETL_INFO
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+			, A.SRCH_CNT
+			, A.ORDB
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+		FROM MK_CELLO_NEWS A
+		WHERE LANG_CD = #{langCd}
+		<if test="@com.bluewaves.lab.util.MyBatisUtil@isNotNull(searchValue) and @com.bluewaves.lab.util.MyBatisUtil@isNotEmpty(searchValue)">
+				AND (A.TITLE_NM ILIKE CONCAT ('%', #{searchValue}, '%') OR A.NEWS_CCD2 ILIKE CONCAT ('%', #{searchValue}, '%'))
+		</if>
+	ORDER BY A.NEWS_SEQ_NO DESC 
+	LIMIT #{endRow} OFFSET #{startRow}
+	</select>
+
+	<insert id="doWrite" parameterType="com.cellosquare.adminapp.admin.cellonews.vo.AdminCelloNewsVO">
+	INSERT INTO MK_CELLO_NEWS (
+		META_SEQ_NO
+		, LANG_CD
+		, NEWS_CCD1
+		, NEWS_CCD2
+		, TITLE_NM
+		, SUMMARY_INFO
+		, PC_LIST_IMG_PATH
+		, PC_LIST_IMG_ORG_FILE_NM
+		, PC_LIST_IMG_FILE_NM
+		, PC_LIST_IMG_SIZE
+		, PC_LIST_IMG_ALT
+		, PC_DETL_IMG_PATH
+		, PC_DETL_IMG_ORG_FILE_NM
+		, PC_DETL_IMG_FILE_NM
+		, PC_DETL_IMG_SIZE
+		, PC_DETL_IMG_ALT
+		, MOBILE_LIST_IMG_PATH 
+		, MOBILE_LIST_IMG_ORG_FILE_NM
+		, MOBILE_LIST_IMG_FILE_NM
+		, MOBILE_LIST_IMG_SIZE 
+		, MOBILE_LIST_IMG_ALT
+		, MOBILE_DETL_IMG_PATH 
+		, MOBILE_DETL_IMG_ORG_FILE_NM
+		, MOBILE_DETL_IMG_FILE_NM
+		, MOBILE_DETL_IMG_SIZE 
+		, MOBILE_DETL_IMG_ALT
+		, NEWS_DETL_INFO
+		, USE_YN
+		, INS_DTM
+		, INS_PERSON_ID
+		, UPD_DTM
+		, UPD_PERSON_ID
+	) VALUES (
+		#{metaSeqNo}::integer
+		, #{langCd}
+		, #{newsCcd1}
+		, #{newsCcd2}
+		, #{titleNm}
+		, #{summaryInfo}
+		, #{pcListImgPath}
+		, #{pcListImgOrgFileNm}
+		, #{pcListImgFileNm}
+		, #{pcListImgSize}::integer
+		, #{pcListImgAlt}
+		, #{pcDetlImgPath}
+		, #{pcDetlImgOrgFileNm}
+		, #{pcDetlImgFileNm}
+		, #{pcDetlImgSize}::integer
+		, #{pcDetlImgAlt}
+		, #{mobileListImgPath}
+		, #{mobileListImgOrgFileNm}
+		, #{mobileListImgFileNm}
+		, #{mobileListImgSize}::integer
+		, #{mobileListImgAlt}
+		, #{mobileDetlImgPath}
+		, #{mobileDetlImgOrgFileNm}
+		, #{mobileDetlImgFileNm}
+		, #{mobileDetlImgSize}::integer
+		, #{mobileDetlImgAlt}
+		, #{newsDetlInfo}
+		, #{useYn}
+		, NOW()
+		, #{insPersonId}
+		, NOW()
+		, #{updPersonId}
+	)
+	</insert>
+	
+	<select id="getDetail" parameterType="com.cellosquare.adminapp.admin.cellonews.vo.AdminCelloNewsVO" resultType="com.cellosquare.adminapp.admin.cellonews.vo.AdminCelloNewsVO">
+		 SELECT
+			A.NEWS_SEQ_NO
+			, A.META_SEQ_NO
+			, A.LANG_CD
+			, A.NEWS_CCD1
+			, FN_GETCODENM('CELLO_NEWS', A.NEWS_CCD1, A.LANG_CD) AS NEWS_CCD_NM
+			, A.NEWS_CCD2
+			, A.TITLE_NM
+			, A.SUMMARY_INFO
+			, A.PC_LIST_IMG_PATH
+			, A.PC_LIST_IMG_ORG_FILE_NM
+			, A.PC_LIST_IMG_FILE_NM
+			, A.PC_LIST_IMG_SIZE
+			, A.PC_LIST_IMG_ALT
+			, A.PC_DETL_IMG_PATH
+			, A.PC_DETL_IMG_ORG_FILE_NM
+			, A.PC_DETL_IMG_FILE_NM
+			, A.PC_DETL_IMG_SIZE
+			, A.PC_DETL_IMG_ALT
+			, A.MOBILE_LIST_IMG_PATH 
+			, A.MOBILE_LIST_IMG_ORG_FILE_NM
+			, A.MOBILE_LIST_IMG_FILE_NM
+			, A.MOBILE_LIST_IMG_SIZE 
+			, A.MOBILE_LIST_IMG_ALT
+			, A.MOBILE_DETL_IMG_PATH 
+			, A.MOBILE_DETL_IMG_ORG_FILE_NM
+			, A.MOBILE_DETL_IMG_FILE_NM
+			, A.MOBILE_DETL_IMG_SIZE 
+			, A.MOBILE_DETL_IMG_ALT
+			, A.NEWS_DETL_INFO
+			, A.ORDB
+			, A.USE_YN
+			, FN_GETCODENM('USE_YN', A.USE_YN, A.LANG_CD) AS USE_YN_NM
+			, A.SRCH_CNT
+			, TO_CHAR(A.INS_DTM, 'YYYY-MM-DD') AS INS_DTM
+			, A.INS_PERSON_ID
+			, FN_GETMANAGERNM(A.INS_PERSON_ID) AS INS_PERSON_NM
+			, TO_CHAR(A.UPD_DTM, 'YYYY-MM-DD') AS UPD_DTM
+			, A.UPD_PERSON_ID
+			, FN_GETMANAGERNM(A.UPD_PERSON_ID) AS UPD_PERSON_NM
+		FROM MK_CELLO_NEWS A
+		WHERE 1=1 
+		AND A.NEWS_SEQ_NO = #{newsSeqNo}::integer
+	 </select>
+
+	<update id="doUpdate" parameterType="com.cellosquare.adminapp.admin.cellonews.vo.AdminCelloNewsVO">
+	UPDATE MK_CELLO_NEWS
+	SET
+		 NEWS_CCD1						 = #{newsCcd1}
+		, NEWS_CCD2						 = #{newsCcd2}
+		, TITLE_NM						 = #{titleNm}
+		, SUMMARY_INFO 					 = #{summaryInfo}
+		, NEWS_DETL_INFO 			 	 = #{newsDetlInfo}
+		, PC_LIST_IMG_PATH			     = #{pcListImgPath}
+		, PC_LIST_IMG_ORG_FILE_NM        = #{pcListImgOrgFileNm}
+		, PC_LIST_IMG_FILE_NM            = #{pcListImgFileNm}
+		, PC_LIST_IMG_SIZE               = #{pcListImgSize}::integer
+		, PC_LIST_IMG_ALT                = #{pcListImgAlt}
+		, PC_DETL_IMG_PATH			 	 = #{pcDetlImgPath}
+		, PC_DETL_IMG_ORG_FILE_NM      	 = #{pcDetlImgOrgFileNm}
+		, PC_DETL_IMG_FILE_NM          	 = #{pcDetlImgFileNm}
+		, PC_DETL_IMG_SIZE             	 = #{pcDetlImgSize}::integer
+		, PC_DETL_IMG_ALT              	 = #{pcDetlImgAlt}
+		, MOBILE_LIST_IMG_PATH			 = #{mobileListImgPath}
+		, MOBILE_LIST_IMG_ORG_FILE_NM    = #{mobileListImgOrgFileNm}
+		, MOBILE_LIST_IMG_FILE_NM        = #{mobileListImgFileNm}
+		, MOBILE_LIST_IMG_SIZE           = #{mobileListImgSize}::integer
+		, MOBILE_LIST_IMG_ALT            = #{mobileListImgAlt}
+		, MOBILE_DETL_IMG_PATH		 	 = #{mobileDetlImgPath}
+		, MOBILE_DETL_IMG_ORG_FILE_NM  	 = #{mobileDetlImgOrgFileNm}
+		, MOBILE_DETL_IMG_FILE_NM      	 = #{mobileDetlImgFileNm}
+		, MOBILE_DETL_IMG_SIZE         	 = #{mobileDetlImgSize}::integer
+		, MOBILE_DETL_IMG_ALT          	 = #{mobileDetlImgAlt}
+		, USE_YN 						 = #{useYn}
+		, UPD_DTM 						 = NOW()
+		, UPD_PERSON_ID  				 = #{updPersonId}
+	WHERE NEWS_SEQ_NO = #{newsSeqNo}::integer
+	</update>
+
+	<delete id="doDelete" parameterType="com.cellosquare.adminapp.admin.cellonews.vo.AdminCelloNewsVO">
+	DELETE FROM MK_CELLO_NEWS
+	WHERE NEWS_SEQ_NO = #{newsSeqNo}::integer
+	</delete>
+	
+	<update id="doSortOrder" parameterType="com.cellosquare.adminapp.admin.cellonews.vo.AdminCelloNewsVO">
+		UPDATE MK_CELLO_NEWS SET
+			ORDB = #{ordb}
+		WHERE NEWS_SEQ_NO = #{newsSeqNo}::integer
+	</update>
+	
+</mapper>
